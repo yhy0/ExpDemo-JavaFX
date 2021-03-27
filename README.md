@@ -8,7 +8,7 @@
 
 虽然有很多优秀的命令行利用工具，但我觉得还是带界面的方便。
 
-使用本项目，你不需要懂太多Java语言，只需要了解基本的语法，参考自带的EXP例子，即可快速开发一款**属于你自己**的漏洞利用工具。
+使用本项目，你不需要懂太多Java语言，只需要了解基本的语法，参考自带的EXP例子，即可快速开发一款**属于你自己**的漏洞利用工具。![image-20210327202455665](../../../Desktop/images/image-20210327202455665.png)
 
 ## 0x02 Demo
 
@@ -20,6 +20,7 @@
 
 #### 3.1 项目结构
 
+```apl
 .
 ├── ExpDemo-JavaFX.iml
 ├── pom.xml	maven工程的基本文件
@@ -46,6 +47,9 @@
             ├── sample.fxml								 JavaFX图形化界面描述文件
             ├── sec.png
             └── weixin.jpg
+```
+
+
 
 #### 3.2 编写EXP
 
@@ -53,7 +57,7 @@
 
 ![image-20210327190517731](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194809.png)
 
--   checkVUL		检查 poc 检查是否漏洞
+-   checkVUL		使用poc 检查是否漏洞
 -   exeCMD          使用exp执行命令
 -   uploadFile        使用命令执行 写webshell，上传文件
 -   getWebPath     获取网站的web目录，供上传文件使用
@@ -69,13 +73,13 @@ EXP具体编写请参考 `src/main/java/com/yhy/core/CVE_2020_14882.java` 示例
 
 #### 3.3 部署，发布
 
-当一切编写完成，bug修复完毕，在项目根目录下 执行 `mvn jfx:jar` 即可生产 jar文件。
+当一切编写完成，bug修复完毕，在项目根目录下执行 `mvn jfx:jar` 即可生成 jar文件。
 
 对方没有Java环境，不想安装怎么办？
 
 使用`mvn jfx:native` 命令生产对应平台的文件，比如Mac 下，执行命令`mvn jfx:native` 命令就会在 **target/jfx/native** 目录下生成打包后应用，带可执行文件，带 JRE 运行环境。
 
- `mvn clean` 用于清除生产的文件。
+ `mvn clean` 用于清除生成的文件。
 
 ## 0x04 界面修改
 
@@ -108,6 +112,8 @@ https://www.oracle.com/java/technologies/javafxscenebuilder-1x-archive-downloads
 1.  使用`@FXML`注解，声明变量
 
     ![image-20210327192937964](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194848.png)
+
+    
 
 2.  在函数中使用变量
 
