@@ -32,19 +32,19 @@
         │   └── com
         │       └── yhy
         │           ├── Controller.java	 控制JavaFX图形化界面的各种显示、事件等，核心代码
-        │           ├── Main.java			JavaFX 应用程序的入口
-        │           ├── core					核心代码文件夹
-        │           │   ├── CVE_2020_14882.java	exp编写示例
-        │           │   ├── Constants.java			  一些常量信息
-        │           │   ├── ExploitInterface.java	  exp 编写要实现的接口
-        │           │   ├── Job.java					   批量检查的线程池
-        │           │   └── VulInfo.java                  映射批量检查界面中的表格，信息基本类
-        │           └── tools								 工具文件夹
-        │               ├── HttpTool.java                 HTTP 请求封装
-        │               ├── MyCERT.java				 HTTPS 请求证书设置
-        │               └── Tools.java					 一些处理函数
-        └── resources										资源文件夹
-            ├── sample.fxml								 JavaFX图形化界面描述文件
+        │           ├── Main.java     JavaFX 应用程序的入口
+        │           ├── core    核心代码文件夹
+        │           │   ├── CVE_2020_14882.java	 exp编写示例
+        │           │   ├── Constants.java		  一些常量信息
+        │           │   ├── ExploitInterface.java	 exp 编写要实现的接口
+        │           │   ├── Job.java	批量检查的线程池
+        │           │   └── VulInfo.java    映射批量检查界面中的表格，信息基本类
+        │           └── tools		工具文件夹
+        │               ├── HttpTool.java     HTTP 请求封装
+        │               ├── MyCERT.java    HTTPS 请求证书设置
+        │               └── Tools.java	    一些处理函数
+        └── resources	资源文件夹
+            ├── sample.fxml	 avaFX图形化界面描述文件
             ├── sec.png
             └── weixin.jpg
 ```
