@@ -69,6 +69,12 @@ EXP具体编写请参考 `src/main/java/com/yhy/core/CVE_2020_14882.java` 示例
 
 ![image-20210327191129699](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194816.png)
 
+之后进入`src/main/java/com/yhy/Controller.java` 和 `com/yhy/tools/Tools.java` 文件编写逻辑
+
+![Snipaste_2021-03-27_21-04-14](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327210741.png)
+
+![111111111111111](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327210756.png)
+
 编写完后，可以直接执行`Main`类, 查看是否正常运行。
 
 #### 3.3 部署，发布
