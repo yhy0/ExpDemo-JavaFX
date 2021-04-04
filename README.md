@@ -1,6 +1,9 @@
+## 更新
 
+### V1.1 
 
->   山高水长,天涯未远,江湖再见
+1.  参考冰蝎的代理，添加代理设置，方便走burp调试
+2.  优化批量检查逻辑，使用接口，这样每次添加新的漏洞利用时，就不需要修改批量检查的逻辑。
 
 ## 0x01 这是个嘛？
 
@@ -69,9 +72,9 @@ EXP具体编写请参考 `src/main/java/com/yhy/core/CVE_2020_14882.java` 示例
 
 ![image-20210327191129699](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194816.png)
 
-之后进入`src/main/java/com/yhy/Controller.java` 和 `com/yhy/tools/Tools.java` 文件编写逻辑
+之后进入`src/main/java/com/yhy/core/Constants.java` 和 `com/yhy/tools/Tools.java` 文件编写逻辑
 
-![Snipaste_2021-03-27_21-04-14](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327210741.png)
+![image-20210404140737264](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210404140740.png)
 
 ![111111111111111](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327210756.png)
 
@@ -86,6 +89,8 @@ EXP具体编写请参考 `src/main/java/com/yhy/core/CVE_2020_14882.java` 示例
 使用`mvn jfx:native` 命令生产对应平台的文件，比如Mac 下，执行命令`mvn jfx:native` 命令就会在 **target/jfx/native** 目录下生成打包后应用，带可执行文件，带 JRE 运行环境。
 
  `mvn clean` 用于清除生成的文件。
+
+ 使用**target/jfx/app/ExpDemo-JavaFX-1.0-jfx.jar** 下的jar文件，**不要**使用 **target** 目录下的jar文件, **target** 目录下的jar文件命令执行不知道为啥没有回显
 
 ## 0x04 界面修改
 
@@ -131,7 +136,15 @@ https://www.oracle.com/java/technologies/javafxscenebuilder-1x-archive-downloads
 
     其他控件使用，请参考`src/main/java/com/yhy/Controller.java` ，或者自行学习JavaFX。
 
+## 0x05 免责声明
 
+本工具仅能在取得足够合法授权的企业安全建设中使用，在使用本工具过程中，您应确保自己所有行为符合当地的法律法规。
+
+如您在使用本工具的过程中存在任何非法行为，您将自行承担所有后果，本工具所有开发者和所有贡献者不承担任何法律及连带责任。
+
+除非您已充分阅读、完全理解并接受本协议所有条款，否则，请您不要安装并使用本工具。
+
+您的使用行为或者您以其他任何明示或者默示方式表示接受本协议的，即视为您已阅读并同意本协议的约束。
 
 
 

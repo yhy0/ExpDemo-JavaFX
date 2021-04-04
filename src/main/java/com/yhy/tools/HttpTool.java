@@ -8,11 +8,11 @@ package com.yhy.tools;
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
+import com.yhy.Controller;
+
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.security.SecureRandom;
 import java.util.HashMap;
 
@@ -152,21 +152,28 @@ public class HttpTool {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
+
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
-                hsc = (HttpsURLConnection)url.openConnection();
+                //代理
+                Proxy proxy = (Proxy) Controller.currentProxy.get("proxy");
+
+                if (proxy != null) {
+                    hsc = (HttpsURLConnection)url.openConnection(proxy);
+                } else {
+                    hsc = (HttpsURLConnection)url.openConnection();
+                }
                 hsc.setSSLSocketFactory(ssf);
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
-//                InetSocketAddress addr = new InetSocketAddress("127.0.0.1", 8080);
-//                // http 代理
-//                Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
-//                // 试图连接并取得返回状态码
 
-//                hc = (HttpURLConnection)url.openConnection(proxy);
+                Proxy proxy = (Proxy) Controller.currentProxy.get("proxy");
+                if (proxy != null) {
+                    hc = (HttpURLConnection)url.openConnection(proxy);
+                } else {
+                    hc = (HttpURLConnection)url.openConnection();
+                }
 
-                // 打开和URL之间的连接
-                hc = (HttpURLConnection)url.openConnection();
                 hc.setRequestMethod(requestMethod);
                 hc.setInstanceFollowRedirects(false);
                 httpUrlConn = hc;

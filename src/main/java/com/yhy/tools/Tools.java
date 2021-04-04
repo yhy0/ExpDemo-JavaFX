@@ -9,11 +9,13 @@ package com.yhy.tools;
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
 import com.yhy.core.CVE_2020_14882;
+import com.yhy.core.CVE_2021_22986;
 import com.yhy.core.ExploitInterface;
 import javafx.scene.control.Alert;
 import javafx.stage.Window;
 
 import java.io.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -139,15 +141,19 @@ public class Tools {
         return list;
     }
 
+
+
+
+
     // 根据cve选择对应的漏洞检测
     public static ExploitInterface getExploit(String select) {
         ExploitInterface ei = null;
 
         if (select.startsWith("CVE-2020-14882")) {
             ei = new CVE_2020_14882();
-        } else if (select.startsWith("CVE-2017-10271")) {
+        } else if (select.startsWith("CVE-2021-22986")) {
             // 这里创建你的cve漏洞检测，注意要实现 ExploitInterface 接口
-//            ei = new CVE_2017_10271_12();
+            ei = new CVE_2021_22986();
         }
 
         return (ExploitInterface)ei;

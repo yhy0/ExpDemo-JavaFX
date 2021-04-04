@@ -11,18 +11,18 @@ public class Constants {
 
     public static String NAME = "图形化漏洞利用Demo-JavaFx版";
 
-    public static String VERSION = "v1.0 ";
+    public static String VERSION = "v1.1 ";
 
     public static String AUTHOR = "yhy";
 
     public static String BASICINFO = "本工具提供给安全测试人员,安全工程师,进行安全自查使用,请勿非法使用\r\n\r\n" +
             "版本:     " + VERSION + "\n\n" +
-            "Bug反馈:  https://github.com/yhy0";
+            "Bug反馈:  https://github.com/yhy0/ExpDemo-JavaFX";
 
 
     public static String[] CVES = {
             "CVE-2020-14882 未授权代码执行漏洞",
-            "CVE-2021-1 weblogic xml反序列化漏洞",
+            "CVE-2021-22986 F5 BIG-IP/BIG-IQ iControl REST 未授权远程代码执行漏洞",
             "CVE-2021-2 weblogic xml反序列化漏洞",
             "CVE-2021-3",
             "CVE-2021-4",
