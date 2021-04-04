@@ -17,7 +17,7 @@
 
 废话不多说，先上效果图，自带CVE-2020-14882 Weblogic远程代码执行漏洞
 
-![JavaFX](https://cdn.jsdelivr.net/gh/yhy0/PicGoImg@master/JavaFX/20210327184310.gif)
+![JavaFX](images/20210327184310.gif)
 
 ## 0x03 编写属于你的图像化漏洞利用工具
 
@@ -58,7 +58,7 @@
 
 编写EXP时，要使用 `implements`实现`ExploitInterface`接口，实现接口中的几个方法
 
-![image-20210327190517731](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194809.png)
+![image-20210327190517731](images/20210327194809.png)
 
 -   checkVUL		使用poc 检查是否漏洞
 -   exeCMD          使用exp执行命令
@@ -70,13 +70,13 @@ EXP具体编写请参考 `src/main/java/com/yhy/core/CVE_2020_14882.java` 示例
 
 当编写完EXP后，转到 `src/main/java/com/yhy/core/Constants.java` 文件，修改`CVES` 变量，即图像化界面中可供选择的漏洞列表
 
-![image-20210327191129699](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194816.png)
+![image-20210327191129699](images/20210327194816.png)
 
 之后进入`src/main/java/com/yhy/core/Constants.java` 和 `com/yhy/tools/Tools.java` 文件编写逻辑
 
-![image-20210404140737264](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210404140740.png)
+![image-20210404140737264](images/20210404140740.png)
 
-![111111111111111](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327210756.png)
+![111111111111111](images/20210327210756.png)
 
 编写完后，可以直接执行`Main`类, 查看是否正常运行。
 
@@ -102,19 +102,19 @@ https://www.oracle.com/java/technologies/javafxscenebuilder-1x-archive-downloads
 
 安装完，在IDEA中右键打开(设置好JavaFx Scene Builder的路径)
 
-![image-20210327192030204](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194824.png)
+![image-20210327192030204](images/20210327194824.png)
 
 打开后
 
-![image-20210327192230881](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194835.png)
+![image-20210327192230881](images/20210327194835.png)
 
 想添加什么控件，直接从Scene Builder的左边控件栏中拖拽一个到界面设计区域，然后只需要关心右侧栏第三个`Code`的`fx:id` 和` On Action ` 
 
-![image-20210327192402177](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194840.png)
+![image-20210327192402177](images/20210327194840.png)
 
 比如想添加一个 输入框，搜索框查询，然后拖一个 `TextField` 控件到设计区
 
-![image-20210327192547983](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194844.png)
+![image-20210327192547983](images/20210327194844.png)
 
 为这个 `TextField` 设置一个`fx:id` ，然后`Ctrl+s`保存,  `sample.fxml` 会做出相应的更改，不需要关心
 
@@ -122,7 +122,7 @@ https://www.oracle.com/java/technologies/javafxscenebuilder-1x-archive-downloads
 
 1.  使用`@FXML`注解，声明变量
 
-    ![image-20210327192937964](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194848.png)
+    ![image-20210327192937964](images/20210327194848.png)
 
     
 
@@ -132,7 +132,7 @@ https://www.oracle.com/java/technologies/javafxscenebuilder-1x-archive-downloads
 
     使用`this.cmd.setText() `设置值
 
-    ![image-20210327193148639](https://gitee.com/yhy0/pic-go-img/raw/master/WX/20210327194852.png)
+    ![image-20210327193148639](images/20210327194852.png)
 
     其他控件使用，请参考`src/main/java/com/yhy/Controller.java` ，或者自行学习JavaFX。
 
