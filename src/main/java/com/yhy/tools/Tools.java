@@ -141,8 +141,16 @@ public class Tools {
         return list;
     }
 
-
-
+    public static boolean write(String path, String value) {
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(path));
+            out.write(value);
+            out.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
 
 
     // 根据cve选择对应的漏洞检测

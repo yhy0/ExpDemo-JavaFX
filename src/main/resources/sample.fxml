@@ -40,7 +40,7 @@
             <Label fx:id="tool_name" text=" %s %s" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label fx:id="author" prefHeight="17.0" prefWidth="55.0" text=" %s" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <Label fx:id="proxyStatusLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="proxyStatusLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <TextField fx:id="url" layoutX="454.0" layoutY="34.0" prefHeight="27.0" prefWidth="213.0" promptText="http://127.0.0.1" />
@@ -159,7 +159,7 @@
                               </LinearGradient>
                            </fill>
                         </Text>
-                        <Button fx:id="import_file" layoutX="512.0" layoutY="4.0" mnemonicParsing="false" onAction="#batch_test" prefHeight="18.0" prefWidth="50.0" text="导入">
+                        <Button fx:id="import_file" layoutX="480.0" layoutY="5.0" mnemonicParsing="false" onAction="#batch_test" prefHeight="18.0" prefWidth="50.0" text="导入">
                            <textFill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -172,8 +172,8 @@
                               <Font size="15.0" />
                            </font>
                         </Button>
-                        <TextField fx:id="file_path" layoutX="129.0" layoutY="6.0" prefHeight="27.0" prefWidth="353.0" />
-                        <Text fx:id="time" layoutX="581.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="用时    %s">
+                        <TextField fx:id="file_path" layoutX="129.0" layoutY="6.0" prefHeight="27.0" prefWidth="329.0" />
+                        <Text fx:id="time" layoutX="617.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="用时    %s">
                            <fill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -193,7 +193,20 @@
                               <TableColumn fx:id="isVul" prefWidth="97.0" text="是否存在漏洞" />
                           </columns>
                         </TableView>
-                        <Text fx:id="time1" fill="#946464" layoutX="700.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PS:  双击行复制url" />
+                        <Text fx:id="time1" fill="#946464" layoutX="714.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PS:  双击行复制url" />
+                        <Button fx:id="export_file" layoutX="550.0" layoutY="5.0" mnemonicParsing="false" onAction="#export" prefHeight="18.0" prefWidth="50.0" text="导出">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="BLACK" />
+                                    <Stop color="#d34c4c" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill>
+                        </Button>
                      </children></AnchorPane>
                </content>
             </Tab>

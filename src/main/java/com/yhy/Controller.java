@@ -22,8 +22,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.json.JSONObject;
-import sun.security.krb5.internal.crypto.NullEType;
 
 import java.io.File;
 import java.net.Authenticator;
@@ -334,9 +332,11 @@ public class Controller {
 
                 if(this.ei.checkVUL(url)) {
                     this.basic_info.setText(url + " 存在 " + cve + "漏洞 \r\n");
+                } else {
+                    this.basic_info.setText(url + " 不存在 " + cve + "漏洞 \r\n");
                 }
-            } catch (Exception var4) {
-                this.basic_info.setText(url + " 不存在 " + cve + "漏洞 \r\n" + var4.toString());
+            } catch (Exception e) {
+                this.basic_info.setText("检测异常 \r\n" + e.toString());
             }
 
         } else {
@@ -470,6 +470,46 @@ public class Controller {
             });
             return row;
         });
+
+    }
+
+
+    @FXML
+    // 导出漏洞存在的url
+    public void export() {
+
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        Stage s = new Stage();
+        File file = fileChooser.showSaveDialog(s);
+        if (file == null)
+            return;
+        if(file.exists()){ //文件已存在，则删除覆盖文件
+            file.delete();
+        }
+        String exportFilePath = file.getAbsolutePath();
+
+        StringBuilder sBuilder = new StringBuilder();
+        if (this.datas.size() > 0) {
+            for(VulInfo vulInfo: this.datas) {
+                if(vulInfo.getIsVul().equals("存在")) {
+                    System.out.println(vulInfo.getTarget());
+                    sBuilder.append(vulInfo.getTarget() + "\r\n");
+                }
+
+            }
+        }
+        if(Tools.write(exportFilePath, sBuilder.toString())) {
+            System.out.println("文件创建成功！");
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("提示");
+            alert.setHeaderText(null);
+            alert.setContentText("导出成功!保存路径:\n"+exportFilePath);
+
+            alert.showAndWait();
+        }
+
 
     }
 

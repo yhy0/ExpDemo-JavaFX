@@ -144,8 +144,9 @@ public class HttpTool {
         HttpsURLConnection hsc = null;
         HttpURLConnection hc = null;
         InputStream inputStream = null;
-        BufferedInputStream bis = null;
-        ByteArrayOutputStream baos = null;
+
+        String res = null;
+
         try {
             URL url = new URL(requestUrl);
             if (requestUrl.startsWith("https")) {
@@ -211,34 +212,27 @@ public class HttpTool {
 
             String result = readString(inputStream, encoding);
 
-            return result;
-
-
-        } catch (IOException e) {
-            System.out.println(e);
             if (hsc != null) {
-                System.out.println("1");
-                System.out.println(hsc.getErrorStream());
-                return readString(hsc.getErrorStream(), encoding);
+                hsc.disconnect();
             }
 
             if (hc != null) {
-                System.out.println("2");
-                System.out.println(hc.getErrorStream());
-                return readString(hc.getErrorStream(), encoding);
+                hc.disconnect();
             }
 
-            return "";
+            return result;
+
         } catch (Exception e) {
-            System.out.println("3");
-            System.out.println(e);
-            throw e;
-        } finally {
-            if (hsc != null)
+            if (hsc != null) {
                 hsc.disconnect();
-            if (hc != null)
+            }
+
+            if (hc != null) {
                 hc.disconnect();
+            }
+            throw e;
         }
+
     }
 
     public static int codeByHttpRequest(String requestUrl, int timeOut, String requestMethod, String contentType, String postString, String encoding) throws Exception {

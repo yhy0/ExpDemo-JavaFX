@@ -11,7 +11,7 @@ public class Constants {
 
     public static String NAME = "图形化漏洞利用Demo-JavaFx版";
 
-    public static String VERSION = "v1.1 ";
+    public static String VERSION = "v1.2 ";
 
     public static String AUTHOR = "yhy";
 
