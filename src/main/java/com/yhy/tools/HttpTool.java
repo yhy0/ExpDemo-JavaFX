@@ -8,11 +8,11 @@ package com.yhy.tools;
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
+import com.yhy.Controller;
+
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.security.SecureRandom;
 import java.util.HashMap;
 
@@ -144,29 +144,37 @@ public class HttpTool {
         HttpsURLConnection hsc = null;
         HttpURLConnection hc = null;
         InputStream inputStream = null;
-        BufferedInputStream bis = null;
-        ByteArrayOutputStream baos = null;
+
+        String res = null;
+
         try {
             URL url = new URL(requestUrl);
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
+
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
-                hsc = (HttpsURLConnection)url.openConnection();
+                //代理
+                Proxy proxy = (Proxy) Controller.currentProxy.get("proxy");
+
+                if (proxy != null) {
+                    hsc = (HttpsURLConnection)url.openConnection(proxy);
+                } else {
+                    hsc = (HttpsURLConnection)url.openConnection();
+                }
                 hsc.setSSLSocketFactory(ssf);
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
-//                InetSocketAddress addr = new InetSocketAddress("127.0.0.1", 8080);
-//                // http 代理
-//                Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
-//                // 试图连接并取得返回状态码
 
-//                hc = (HttpURLConnection)url.openConnection(proxy);
+                Proxy proxy = (Proxy) Controller.currentProxy.get("proxy");
+                if (proxy != null) {
+                    hc = (HttpURLConnection)url.openConnection(proxy);
+                } else {
+                    hc = (HttpURLConnection)url.openConnection();
+                }
 
-                // 打开和URL之间的连接
-                hc = (HttpURLConnection)url.openConnection();
                 hc.setRequestMethod(requestMethod);
                 hc.setInstanceFollowRedirects(false);
                 httpUrlConn = hc;
@@ -204,34 +212,27 @@ public class HttpTool {
 
             String result = readString(inputStream, encoding);
 
-            return result;
-
-
-        } catch (IOException e) {
-            System.out.println(e);
             if (hsc != null) {
-                System.out.println("1");
-                System.out.println(hsc.getErrorStream());
-                return readString(hsc.getErrorStream(), encoding);
+                hsc.disconnect();
             }
 
             if (hc != null) {
-                System.out.println("2");
-                System.out.println(hc.getErrorStream());
-                return readString(hc.getErrorStream(), encoding);
+                hc.disconnect();
             }
 
-            return "";
+            return result;
+
         } catch (Exception e) {
-            System.out.println("3");
-            System.out.println(e);
-            throw e;
-        } finally {
-            if (hsc != null)
+            if (hsc != null) {
                 hsc.disconnect();
-            if (hc != null)
+            }
+
+            if (hc != null) {
                 hc.disconnect();
+            }
+            throw e;
         }
+
     }
 
     public static int codeByHttpRequest(String requestUrl, int timeOut, String requestMethod, String contentType, String postString, String encoding) throws Exception {

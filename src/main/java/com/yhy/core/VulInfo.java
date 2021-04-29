@@ -20,21 +20,17 @@ public class VulInfo {
         setIsVul(isVul);
     }
 
-
     public String getId() {
         return id.get();
     }
-
 
     public void setId(String id) {
         this.id.set(id);
     }
 
-
     public String getTarget() {
         return target.get();
     }
-
 
     public void setTarget(String target) {
         this.target.set(target);
@@ -43,7 +39,6 @@ public class VulInfo {
     public String getIsVul() {
         return isVul.get();
     }
-
 
     public void setIsVul(String isVul) {
         this.isVul.set(isVul);

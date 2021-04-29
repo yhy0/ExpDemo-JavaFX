@@ -8,6 +8,7 @@ import com.yhy.tools.Tools;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -15,13 +16,21 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +41,8 @@ public class Controller {
 
     @FXML
     private Label tool_name;
+    @FXML
+    private Label proxyStatusLabel;
     @FXML
     private Label author;
     @FXML
@@ -74,6 +85,13 @@ public class Controller {
 
     private ExploitInterface ei;
 
+    @FXML
+    private MenuItem proxySetupBtn;
+
+    //代理
+    public static Map<String, Object> currentProxy = new HashMap();
+
+
     // 监听菜单关于事件
     @FXML
     public void about() {
@@ -87,16 +105,14 @@ public class Controller {
 
         DialogPane dialogPane = new DialogPane();
 
-        TextArea textArea = new TextArea("本工具提供给安全测试人员,安全工程师,进行安全自查使用,请勿非法使用\n\n\n" +
-                "版本:\tV0.1\n\n\n" +
-                "Bug反馈:\thttps://github.com/yhy0");
+        TextArea textArea = new TextArea(Constants.BASICINFO);
         textArea.setEditable(false);
         textArea.setWrapText(true);
 
         dialogPane.setContent(textArea);
 
 
-        Image image = new Image(String.valueOf(getClass().getClassLoader().getResource("sec.png")));
+        Image image = new Image(String.valueOf(getClass().getClassLoader().getResource("weixin.jpg")));
         ImageView imageView = new ImageView();
         imageView.setImage(image);
 
@@ -112,6 +128,144 @@ public class Controller {
         alert.showAndWait();
 
 
+    }
+
+    //代理 设置
+    private void proxy() {
+        this.proxySetupBtn.setOnAction((event) -> {
+            Alert inputDialog = new Alert(AlertType.NONE);
+            Window window = inputDialog.getDialogPane().getScene().getWindow();
+            window.setOnCloseRequest((e) -> {
+                window.hide();
+            });
+            ToggleGroup statusGroup = new ToggleGroup();
+            RadioButton enableRadio = new RadioButton("启用");
+            RadioButton disableRadio = new RadioButton("禁用");
+            enableRadio.setToggleGroup(statusGroup);
+            disableRadio.setToggleGroup(statusGroup);
+            disableRadio.setSelected(true);
+            HBox statusHbox = new HBox();
+            statusHbox.setSpacing(10.0D);
+            statusHbox.getChildren().add(enableRadio);
+            statusHbox.getChildren().add(disableRadio);
+            GridPane proxyGridPane = new GridPane();
+            proxyGridPane.setVgap(15.0D);
+            proxyGridPane.setPadding(new Insets(20.0D, 20.0D, 0.0D, 10.0D));
+            Label typeLabel = new Label("类型：");
+            ComboBox typeCombo = new ComboBox();
+            typeCombo.setItems(FXCollections.observableArrayList(new String[]{"HTTP", "SOCKS"}));
+            typeCombo.getSelectionModel().select(0);
+            Label IPLabel = new Label("IP地址：");
+            TextField IPText = new TextField();
+            Label PortLabel = new Label("端口：");
+            TextField PortText = new TextField();
+            Label userNameLabel = new Label("用户名：");
+            TextField userNameText = new TextField();
+            Label passwordLabel = new Label("密码：");
+            TextField passwordText = new TextField();
+            Button cancelBtn = new Button("取消");
+            Button saveBtn = new Button("保存");
+
+            try {
+                Proxy proxy = (Proxy)currentProxy.get("proxy");
+
+                if (proxy != null) {
+                    enableRadio.setSelected(true);
+
+                } else {
+                    disableRadio.setSelected(true);
+                }
+
+                if(currentProxy.size() > 0) {
+                    String type = (String)currentProxy.get("type");
+                    if (type.equals("HTTP")) {
+                        typeCombo.getSelectionModel().select(0);
+                    } else if (type.equals("SOCKS")) {
+                        typeCombo.getSelectionModel().select(1);
+                    }
+
+                    String ip = (String)currentProxy.get("ip");
+                    String port = (String)currentProxy.get("port");
+                    IPText.setText(ip);
+                    PortText.setText(port);
+                    String username = (String)currentProxy.get("username");
+                    String password = (String)currentProxy.get("password");
+                    userNameText.setText(username);
+                    passwordText.setText(password);
+                }
+
+
+            } catch (Exception var28) {
+                this.proxyStatusLabel.setText("代理服务器配置加载失败。");
+                var28.printStackTrace();
+            }
+
+
+            saveBtn.setOnAction((e) -> {
+                if (disableRadio.isSelected()) {
+                    this.currentProxy.put("proxy", (Object)null);
+                    this.proxyStatusLabel.setText("");
+                    inputDialog.getDialogPane().getScene().getWindow().hide();
+                } else {
+
+                    final String type;
+                    if (!userNameText.getText().trim().equals("")) {
+                        final String proxyUser = userNameText.getText().trim();
+                        type = passwordText.getText();
+                        Authenticator.setDefault(new Authenticator() {
+                            public PasswordAuthentication getPasswordAuthentication() {
+                                return new PasswordAuthentication(proxyUser, type.toCharArray());
+                            }
+                        });
+                    } else {
+                        Authenticator.setDefault((Authenticator)null);
+                    }
+
+                    this.currentProxy.put("username", userNameText.getText());
+                    this.currentProxy.put("password", passwordText.getText());
+                    InetSocketAddress proxyAddr = new InetSocketAddress(IPText.getText(), Integer.parseInt(PortText.getText()));
+
+                    this.currentProxy.put("ip", IPText.getText());
+                    this.currentProxy.put("port", PortText.getText());
+                    String proxy_type = typeCombo.getValue().toString();
+                    currentProxy.put("type", proxy_type);
+                    Proxy proxy;
+                    if (proxy_type.equals("HTTP")) {
+                        proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
+                        this.currentProxy.put("proxy", proxy);
+                    } else if (proxy_type.equals("SOCKS")) {
+                        proxy = new Proxy(Proxy.Type.SOCKS, proxyAddr);
+                        this.currentProxy.put("proxy", proxy);
+                    }
+
+                    this.proxyStatusLabel.setText("代理生效中");
+                    inputDialog.getDialogPane().getScene().getWindow().hide();
+                }
+            });
+
+            cancelBtn.setOnAction((e) -> {
+                inputDialog.getDialogPane().getScene().getWindow().hide();
+            });
+            proxyGridPane.add(statusHbox, 1, 0);
+            proxyGridPane.add(typeLabel, 0, 1);
+            proxyGridPane.add(typeCombo, 1, 1);
+            proxyGridPane.add(IPLabel, 0, 2);
+            proxyGridPane.add(IPText, 1, 2);
+            proxyGridPane.add(PortLabel, 0, 3);
+            proxyGridPane.add(PortText, 1, 3);
+            proxyGridPane.add(userNameLabel, 0, 4);
+            proxyGridPane.add(userNameText, 1, 4);
+            proxyGridPane.add(passwordLabel, 0, 5);
+            proxyGridPane.add(passwordText, 1, 5);
+            HBox buttonBox = new HBox();
+            buttonBox.setSpacing(20.0D);
+            buttonBox.getChildren().add(cancelBtn);
+            buttonBox.getChildren().add(saveBtn);
+            GridPane.setColumnSpan(buttonBox, 2);
+            proxyGridPane.add(buttonBox, 0, 6);
+            inputDialog.getDialogPane().setContent(proxyGridPane);
+            inputDialog.showAndWait();
+        });
     }
 
 
@@ -177,10 +331,12 @@ public class Controller {
             try {
 
                 if(this.ei.checkVUL(url)) {
-                    this.basic_info.setText(url + " 存在 " + cve + "漏洞, \r\n");
+                    this.basic_info.setText(url + " 存在 " + cve + "漏洞 \r\n");
+                } else {
+                    this.basic_info.setText(url + " 不存在 " + cve + "漏洞 \r\n");
                 }
-            } catch (Exception var4) {
-                this.basic_info.setText(url + " 不存在 " + cve + "漏洞 \r\n" + var4.toString());
+            } catch (Exception e) {
+                this.basic_info.setText("检测异常 \r\n" + e.toString());
             }
 
         } else {
@@ -278,11 +434,11 @@ public class Controller {
         int n = new Integer(this.thread.getValue().toString());
 
         ExecutorService pool = Executors.newFixedThreadPool(n);
-
+        String cve = this.choice_cve.getValue().toString().trim();
         // 读取每行的目标
         for(String target: values) {
             i++;
-            Job t = new Job(target);
+            Job t = new Job(target, cve);
             // 线程池
             Future f = pool.submit(t);
             String isVul = f.get().toString();
@@ -318,9 +474,50 @@ public class Controller {
     }
 
 
+    @FXML
+    // 导出漏洞存在的url
+    public void export() {
+
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        Stage s = new Stage();
+        File file = fileChooser.showSaveDialog(s);
+        if (file == null)
+            return;
+        if(file.exists()){ //文件已存在，则删除覆盖文件
+            file.delete();
+        }
+        String exportFilePath = file.getAbsolutePath();
+
+        StringBuilder sBuilder = new StringBuilder();
+        if (this.datas.size() > 0) {
+            for(VulInfo vulInfo: this.datas) {
+                if(vulInfo.getIsVul().equals("存在")) {
+                    System.out.println(vulInfo.getTarget());
+                    sBuilder.append(vulInfo.getTarget() + "\r\n");
+                }
+
+            }
+        }
+        if(Tools.write(exportFilePath, sBuilder.toString())) {
+            System.out.println("文件创建成功！");
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("提示");
+            alert.setHeaderText(null);
+            alert.setContentText("导出成功!保存路径:\n"+exportFilePath);
+
+            alert.showAndWait();
+        }
+
+
+    }
+
+
     // 加载
     public void initialize() {
         try {
+            this.proxy();
             this.defaultInformation();
             this.basic();
         } catch (Exception var2) {

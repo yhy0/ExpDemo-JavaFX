@@ -1,5 +1,7 @@
 package com.yhy.core;
 
+import com.yhy.tools.Tools;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -11,20 +13,20 @@ import java.util.concurrent.Callable;
 
 public class Job implements Callable<String> {
     private String target;
+    private String cve;
 
-    public Job(String target) {
+    public Job(String target, String cve) {
         this.target = target;
+        this.cve = cve;
     }
 
     // 根据cve选择对应的漏洞检测
     public boolean checkAllExp() {
-        CVE_2020_14882 cve_2020_14882 = new CVE_2020_14882();
+        ExploitInterface ei = Tools.getExploit(cve);
 
         try {
-            if(cve_2020_14882.checkVUL(this.target)) {
+            if(ei.checkVUL(this.target)) {
                 return true;
-//            } else if(cve_2020_14882.checkVUL(target)) {   // 根据实际漏洞检查写
-//                return true;
             } else {
                 return false;
             }
