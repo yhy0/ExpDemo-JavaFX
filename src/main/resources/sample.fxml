@@ -8,11 +8,12 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="574.0" prefWidth="851.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yhy.Controller">
    <children>
-      <MenuBar layoutY="1.0" prefHeight="27.0" prefWidth="851.0" AnchorPane.bottomAnchor="546.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
+      <MenuBar layoutY="1.0" prefHeight="27.0" prefWidth="851.0" styleClass="\@table" AnchorPane.bottomAnchor="546.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
         <menus>
             <Menu mnemonicParsing="false" text="设置">
                <items>
                   <MenuItem fx:id="proxySetupBtn" mnemonicParsing="false" text="代理" />
+                  <MenuItem fx:id="fofa_setting" mnemonicParsing="false" text="FOFA" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="关于">
@@ -25,8 +26,8 @@
       <ChoiceBox fx:id="choice_cve" layoutX="80.0" layoutY="34.0" prefHeight="27.0" prefWidth="314.0" />
       <GridPane layoutX="1.0" layoutY="542.0" prefHeight="30.0" prefWidth="851.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="562.0" minWidth="10.0" prefWidth="290.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="562.0" minWidth="10.0" prefWidth="212.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="562.0" minWidth="10.0" prefWidth="234.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="562.0" minWidth="10.0" prefWidth="262.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="324.0" minWidth="10.0" prefWidth="300.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="122.0" minWidth="10.0" prefWidth="61.0" />
         </columnConstraints>
@@ -190,7 +191,7 @@
                           <columns>
                             <TableColumn fx:id="id" prefWidth="57.0" text="序号" />
                             <TableColumn fx:id="target" prefWidth="681.0" text="目标" />
-                              <TableColumn fx:id="isVul" prefWidth="97.0" text="是否存在漏洞" />
+                              <TableColumn fx:id="isVul" prefWidth="105.0" text="是否存在漏洞" />
                           </columns>
                         </TableView>
                         <Text fx:id="time1" fill="#946464" layoutX="714.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PS:  双击行复制url" />
@@ -208,6 +209,69 @@
                            </textFill>
                         </Button>
                      </children></AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="FOFA搜索">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="fofa_info" layoutX="66.0" layoutY="8.0" prefHeight="27.0" prefWidth="402.0" promptText="app=&quot;Solr&quot;" />
+                        <Button layoutX="576.0" layoutY="6.0" mnemonicParsing="false" onAction="#fofa_search" text="FOFA">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="BLACK" />
+                                    <Stop color="#b93030" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill>
+                        </Button>
+                        <TextArea fx:id="fofa_result_info" layoutY="43.0" prefHeight="389.0" prefWidth="851.0" />
+                        <Text layoutX="17.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FOFA">
+                           <fill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="BLACK" />
+                                    <Stop color="#fb2020" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </fill>
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Text>
+                        <ChoiceBox fx:id="fofa_size" layoutX="489.0" layoutY="7.0" prefHeight="27.0" prefWidth="67.0" />
+                        <Button fx:id="fofa_check" layoutX="663.0" layoutY="6.0" mnemonicParsing="false" text="Check">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="BLACK" />
+                                    <Stop color="#b93030" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill>
+                        </Button>
+                        <Button layoutX="751.0" layoutY="6.0" mnemonicParsing="false" onAction="#fofa_icon" text="ICON">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="BLACK" />
+                                    <Stop color="#b93030" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill>
+                        </Button>
+                     </children>
+                  </AnchorPane>
                </content>
             </Tab>
         </tabs>

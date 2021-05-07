@@ -9,6 +9,7 @@ package com.yhy.tools;
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
 import com.yhy.Controller;
+import sun.misc.BASE64Encoder;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -23,7 +24,6 @@ public class HttpTool {
 
     public static String httpRequest(String requestUrl, int timeOut, String requestMethod, String contentType, String postString, String encoding) throws Exception {
 
-
         if ("".equals(encoding) || encoding == null)
             encoding = DefalutEncoding;
         URLConnection httpUrlConn = null;
@@ -37,19 +37,27 @@ public class HttpTool {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
+
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
-                hsc = (HttpsURLConnection)url.openConnection();
+
+                //代理
+                Proxy proxy = (Proxy) Controller.settingInfo.get("proxy");
+
+                if (proxy != null) {
+                    hsc = (HttpsURLConnection)url.openConnection(proxy);
+                } else {
+                    hsc = (HttpsURLConnection)url.openConnection();
+                }
                 hsc.setSSLSocketFactory(ssf);
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
-//                InetSocketAddress addr = new InetSocketAddress("127.0.0.1", 8080);
-//                // http 代理
-//                Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
-//                // 试图连接并取得返回状态码
-
-//                hc = (HttpURLConnection)url.openConnection(proxy);
-                hc = (HttpURLConnection)url.openConnection();
+                Proxy proxy = (Proxy) Controller.settingInfo.get("proxy");
+                if (proxy != null) {
+                    hc = (HttpURLConnection)url.openConnection(proxy);
+                } else {
+                    hc = (HttpURLConnection)url.openConnection();
+                }
                 hc.setRequestMethod(requestMethod);
                 //禁止302 跳转
                 hc.setInstanceFollowRedirects(false);
@@ -156,7 +164,7 @@ public class HttpTool {
 
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
                 //代理
-                Proxy proxy = (Proxy) Controller.currentProxy.get("proxy");
+                Proxy proxy = (Proxy) Controller.settingInfo.get("proxy");
 
                 if (proxy != null) {
                     hsc = (HttpsURLConnection)url.openConnection(proxy);
@@ -168,7 +176,7 @@ public class HttpTool {
                 httpUrlConn = hsc;
             } else {
 
-                Proxy proxy = (Proxy) Controller.currentProxy.get("proxy");
+                Proxy proxy = (Proxy) Controller.settingInfo.get("proxy");
                 if (proxy != null) {
                     hc = (HttpURLConnection)url.openConnection(proxy);
                 } else {
@@ -233,6 +241,33 @@ public class HttpTool {
             throw e;
         }
 
+    }
+
+
+    public static String ImageToBase64ByOnline(String imgURL) {
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        try {
+            // 创建URL
+            URL url = new URL(imgURL);
+            byte[] by = new byte[1024];
+            // 创建链接
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5000);
+            InputStream is = conn.getInputStream();
+            // 将内容读取内存中
+            int len = -1;
+            while ((len = is.read(by)) != -1) {
+                data.write(by, 0, len);
+            }
+            // 关闭流
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 对字节数组Base64编码
+        BASE64Encoder encoder = new BASE64Encoder();
+        return encoder.encode(data.toByteArray());
     }
 
     public static int codeByHttpRequest(String requestUrl, int timeOut, String requestMethod, String contentType, String postString, String encoding) throws Exception {

@@ -1,14 +1,17 @@
 package com.yhy;
 
+import com.google.common.hash.Hashing;
 import com.yhy.core.Constants;
 import com.yhy.core.ExploitInterface;
 import com.yhy.core.Job;
 import com.yhy.core.VulInfo;
+import com.yhy.tools.HttpTool;
 import com.yhy.tools.Tools;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -18,20 +21,22 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -54,13 +59,19 @@ public class Controller {
     @FXML
     private ChoiceBox thread;
     @FXML
+    private ChoiceBox fofa_size;
+    @FXML
     private Text time;
     @FXML
     private TextArea basic_info;
     @FXML
+    private TextArea fofa_result_info;
+    @FXML
     private TextArea cmd_info;
     @FXML
     private TextField cmd;
+    @FXML
+    private TextField fofa_info;
 
     @FXML
     private TextArea upload_info;
@@ -88,8 +99,16 @@ public class Controller {
     @FXML
     private MenuItem proxySetupBtn;
 
-    //代理
-    public static Map<String, Object> currentProxy = new HashMap();
+    @FXML
+    private Button fofa_check;
+
+    @FXML
+    private MenuItem fofa_setting;
+
+    // 设置相关信息保存
+    public static Map<String, Object> settingInfo = new HashMap();
+    // fofa 结果
+    public static HashSet<String> fofa_result = new HashSet<String>();
 
 
     // 监听菜单关于事件
@@ -130,8 +149,9 @@ public class Controller {
 
     }
 
-    //代理 设置
-    private void proxy() {
+    // 监听菜单事件
+    private void initToolbar() {
+        //代理 设置
         this.proxySetupBtn.setOnAction((event) -> {
             Alert inputDialog = new Alert(AlertType.NONE);
             Window window = inputDialog.getDialogPane().getScene().getWindow();
@@ -166,8 +186,9 @@ public class Controller {
             Button cancelBtn = new Button("取消");
             Button saveBtn = new Button("保存");
 
+
             try {
-                Proxy proxy = (Proxy)currentProxy.get("proxy");
+                Proxy proxy = (Proxy)settingInfo.get("proxy");
 
                 if (proxy != null) {
                     enableRadio.setSelected(true);
@@ -176,20 +197,20 @@ public class Controller {
                     disableRadio.setSelected(true);
                 }
 
-                if(currentProxy.size() > 0) {
-                    String type = (String)currentProxy.get("type");
+                if(settingInfo.size() > 0) {
+                    String type = (String)settingInfo.get("type");
                     if (type.equals("HTTP")) {
                         typeCombo.getSelectionModel().select(0);
                     } else if (type.equals("SOCKS")) {
                         typeCombo.getSelectionModel().select(1);
                     }
 
-                    String ip = (String)currentProxy.get("ip");
-                    String port = (String)currentProxy.get("port");
+                    String ip = (String)settingInfo.get("ip");
+                    String port = (String)settingInfo.get("port");
                     IPText.setText(ip);
                     PortText.setText(port);
-                    String username = (String)currentProxy.get("username");
-                    String password = (String)currentProxy.get("password");
+                    String username = (String)settingInfo.get("username");
+                    String password = (String)settingInfo.get("password");
                     userNameText.setText(username);
                     passwordText.setText(password);
                 }
@@ -203,7 +224,7 @@ public class Controller {
 
             saveBtn.setOnAction((e) -> {
                 if (disableRadio.isSelected()) {
-                    this.currentProxy.put("proxy", (Object)null);
+                    this.settingInfo.put("proxy", (Object)null);
                     this.proxyStatusLabel.setText("");
                     inputDialog.getDialogPane().getScene().getWindow().hide();
                 } else {
@@ -221,21 +242,21 @@ public class Controller {
                         Authenticator.setDefault((Authenticator)null);
                     }
 
-                    this.currentProxy.put("username", userNameText.getText());
-                    this.currentProxy.put("password", passwordText.getText());
+                    this.settingInfo.put("username", userNameText.getText());
+                    this.settingInfo.put("password", passwordText.getText());
                     InetSocketAddress proxyAddr = new InetSocketAddress(IPText.getText(), Integer.parseInt(PortText.getText()));
 
-                    this.currentProxy.put("ip", IPText.getText());
-                    this.currentProxy.put("port", PortText.getText());
+                    this.settingInfo.put("ip", IPText.getText());
+                    this.settingInfo.put("port", PortText.getText());
                     String proxy_type = typeCombo.getValue().toString();
-                    currentProxy.put("type", proxy_type);
+                    settingInfo.put("type", proxy_type);
                     Proxy proxy;
                     if (proxy_type.equals("HTTP")) {
                         proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
-                        this.currentProxy.put("proxy", proxy);
+                        this.settingInfo.put("proxy", proxy);
                     } else if (proxy_type.equals("SOCKS")) {
                         proxy = new Proxy(Proxy.Type.SOCKS, proxyAddr);
-                        this.currentProxy.put("proxy", proxy);
+                        this.settingInfo.put("proxy", proxy);
                     }
 
                     this.proxyStatusLabel.setText("代理生效中");
@@ -258,6 +279,100 @@ public class Controller {
             proxyGridPane.add(passwordLabel, 0, 5);
             proxyGridPane.add(passwordText, 1, 5);
             HBox buttonBox = new HBox();
+            buttonBox.setSpacing(20.0D);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.getChildren().add(cancelBtn);
+            buttonBox.getChildren().add(saveBtn);
+            GridPane.setColumnSpan(buttonBox, 2);
+            proxyGridPane.add(buttonBox, 0, 6);
+            inputDialog.getDialogPane().setContent(proxyGridPane);
+            inputDialog.showAndWait();
+        });
+
+        //fofa 设置
+        this.fofa_setting.setOnAction((event) -> {
+            Alert inputDialog = new Alert(AlertType.NONE);
+            Window window = inputDialog.getDialogPane().getScene().getWindow();
+            window.setOnCloseRequest((e) -> {
+                window.hide();
+            });
+
+            HBox statusHbox = new HBox();
+            statusHbox.setSpacing(10.0D);
+
+            GridPane proxyGridPane = new GridPane();
+            proxyGridPane.setVgap(15.0D);
+            proxyGridPane.setPadding(new Insets(20.0D, 20.0D, 0.0D, 10.0D));
+            Label fofaEmailLabel = new Label("fofa_email：");
+            TextField fofaEmailText = new TextField();
+            Label fofaKeyLabel = new Label("fofa_key：");
+            TextField fofaKeyText = new TextField();
+
+            Button cancelBtn = new Button("取消");
+
+            Button saveBtn = new Button("保存");
+            File file = new File(Constants.FOFAPATH);
+            try {
+                if (file.exists()) {
+                    String values = Tools.read(Constants.FOFAPATH,"UTF-8", false).toString();
+                    values = values.substring(1,values.length()-1);;
+
+                    System.out.println(values);
+                    String[] EmaliKey = values.split(":");
+                    if(EmaliKey.length == 2) {
+                        String email = EmaliKey[0];
+                        String key = EmaliKey[1];
+                        fofaEmailText.setText(email);
+                        fofaKeyText.setText(key);
+                        this.settingInfo.put("fofa_email", email);
+                        this.settingInfo.put("fofa_key", key);
+                    } else {
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setTitle("提示");
+                        alert.setHeaderText(null);
+                        alert.setContentText("fofa 配置错误\n");
+
+                        alert.showAndWait();
+                    }
+                }
+
+
+            } catch (Exception var28) {
+                this.proxyStatusLabel.setText("fofa配置加载失败。");
+                var28.printStackTrace();
+            }
+
+
+            saveBtn.setOnAction((e) -> {
+                this.settingInfo.put("fofa_email", fofaEmailText.getText());
+                this.settingInfo.put("fofa_key", fofaKeyText.getText());
+                try {
+                    if (!file.exists()) {
+                        file.createNewFile();
+                        Tools.write(Constants.FOFAPATH, fofaEmailText.getText() + ":" + fofaKeyText.getText());
+                        System.out.println("fofa配置已保存");
+                    } else {
+                        Tools.write(Constants.FOFAPATH, fofaEmailText.getText() + ":" + fofaKeyText.getText());
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+                this.proxyStatusLabel.setText("fofa配置已保存");
+                inputDialog.getDialogPane().getScene().getWindow().hide();
+
+            });
+
+            cancelBtn.setOnAction((e) -> {
+                inputDialog.getDialogPane().getScene().getWindow().hide();
+            });
+            proxyGridPane.add(statusHbox, 1, 0);
+            proxyGridPane.add(fofaEmailLabel, 0, 2);
+            proxyGridPane.add(fofaEmailText, 1, 2);
+            proxyGridPane.add(fofaKeyLabel, 0, 3);
+            proxyGridPane.add(fofaKeyText, 1, 3);
+            HBox buttonBox = new HBox();
+            buttonBox.setAlignment(Pos.CENTER);
             buttonBox.setSpacing(20.0D);
             buttonBox.getChildren().add(cancelBtn);
             buttonBox.getChildren().add(saveBtn);
@@ -286,6 +401,11 @@ public class Controller {
             this.thread.getItems().add(i);
         }
 
+
+        this.fofa_size.setValue(100);
+        for(int i : Constants.SIZE) {
+            this.fofa_size.getItems().add(i);
+        }
         // 默认为冰蝎3 的shell
         this.upload_info.setText(Constants.SHELL);
         this.upload_info.setWrapText(true);
@@ -303,6 +423,10 @@ public class Controller {
         this.platform.getItems().add("Windows");
 
         this.time.setText((String.format(this.time.getText(), 0)));
+
+        this.fofa_result_info.setText("\r\n\r\n\r\n\t\t在 设置 -> FOFA 中设置fofa邮箱和key，之后保存（保存后，会在当前目录下生成fofa.conf文件，供以后使用加载）\r\n\r\n" +
+                "\t\tFOFA:\t查询\r\n\r\n\t\tCheck:\t一键导入到批量检查中进行漏洞检测\r\n\r\n" +
+                "\t\tICON:\t通过输入icon的url，计算hash值，供fofa高级会员查询icon hash");
 
         // 页脚
         this.tool_name.setText(String.format(this.tool_name.getText(), Constants.NAME, Constants.VERSION));
@@ -412,20 +536,8 @@ public class Controller {
         clipboard.setContent(content);
     }
 
-    @FXML
-    // url批量导入
-    public void batch_test() throws ExecutionException, InterruptedException {
-        this.datas.clear();
-        Stage stage = new Stage();
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extFilter);
-        File file = fileChooser.showOpenDialog(stage); // 文件路径
-
-        this.file_path.setText(file.toString());
-
-        HashSet<String> values = Tools.read(file.toString(), "UTF-8");
-
+    // 批量检测数据映射到图形化界面表格中
+    public void table_view(HashSet<String> values) {
         int i = 0;
 
         long startTime = System.currentTimeMillis(); //程序开始记录时间
@@ -435,29 +547,38 @@ public class Controller {
 
         ExecutorService pool = Executors.newFixedThreadPool(n);
         String cve = this.choice_cve.getValue().toString().trim();
-        // 读取每行的目标
-        for(String target: values) {
-            i++;
-            Job t = new Job(target, cve);
-            // 线程池
-            Future f = pool.submit(t);
-            String isVul = f.get().toString();
+        try {
+            // 读取每行的目标
+            for(String target: values) {
+                i++;
+                Job t = new Job(target, cve);
+                // 线程池
+                Future f = pool.submit(t);
+                String isVul = f.get().toString();
 
-            this.datas.add(new VulInfo(String.valueOf(i), target, isVul));
+                this.datas.add(new VulInfo(String.valueOf(i), target, isVul));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
 
         //映射数据进每列
         this.id.setCellValueFactory(new PropertyValueFactory("id"));
+        this.id.setSortable(false);
+
         this.target.setCellValueFactory(new PropertyValueFactory("target"));
+        this.target.setSortable(false);
+
         this.isVul.setCellValueFactory(new PropertyValueFactory("isVul"));
 
         // 所有项目添加进datas
         this.table_view.setItems(this.datas);
 
+
         long endTime   = System.currentTimeMillis(); //程序结束记录时间
         long totalTime = endTime - startTime;       //总消耗时间 ,毫秒
         this.time.setText((String.format("用时 %s s", (double)totalTime/1000)));
-
         //双击复制url
         this.table_view.setRowFactory( tv -> {
             TableRow<VulInfo> row = new TableRow<VulInfo>();
@@ -471,6 +592,23 @@ public class Controller {
             return row;
         });
 
+    }
+
+    @FXML
+    // url批量导入
+    public void batch_test() {
+        this.datas.clear();
+        Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showOpenDialog(stage); // 文件路径
+
+        this.file_path.setText(file.toString());
+
+        HashSet<String> values = Tools.read(file.toString(), "UTF-8", true);
+
+        table_view(values);
     }
 
 
@@ -514,18 +652,130 @@ public class Controller {
     }
 
 
-    // 加载
-    public void initialize() {
-        try {
-            this.proxy();
-            this.defaultInformation();
-            this.basic();
-        } catch (Exception var2) {
-            var2.printStackTrace();
+    @FXML
+    // fofa 搜索
+    public void fofa_search() {
+
+        int page = (int) this.fofa_size.getValue();
+
+        String fofa_info = this.fofa_info.getText();
+
+        if(fofa_info.length() == 0) {
+            fofa_info = "app=\"Solr\"";
         }
+
+        String result = "";
+
+        File file = new File(Constants.FOFAPATH);
+        try {
+            if (file.exists()) {
+                String values = Tools.read(Constants.FOFAPATH,"UTF-8", false).toString();
+                values = values.substring(1,values.length()-1);;
+
+                System.out.println(values);
+                String[] EmaliKey = values.split(":");
+                if(EmaliKey.length == 2) {
+                    String email = EmaliKey[0];
+                    String key = EmaliKey[1];
+                    result = Tools.fofaHTTP(email, key, fofa_info, page);
+
+                    String[] str = result.split("\r\n");
+                    for (String s:str) {
+                        fofa_result.add(s);
+                    }
+
+                    this.proxyStatusLabel.setText("fofa查询完成");
+
+                } else {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("提示");
+                    alert.setHeaderText(null);
+                    alert.setContentText("fofa 配置错误\n");
+
+                    alert.showAndWait();
+                }
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = e.getStackTrace().toString();
+        }
+
+
+        fofa_check.setOnAction((e) -> {
+            table_view(fofa_result);
+            this.proxyStatusLabel.setText("批量检查完成，请到批量检查界面查看");
+
+        });
+
+        this.fofa_result_info.setText(result);
+
+    }
+
+    // fofa icon 计算
+    public void fofa_icon() {
+        Alert inputDialog = new Alert(AlertType.NONE);
+        inputDialog.setTitle("ICON Hash 计算");
+        Window window = inputDialog.getDialogPane().getScene().getWindow();
+        window.setOnCloseRequest((e) -> {
+            window.hide();
+        });
+
+        HBox statusHbox = new HBox();
+        statusHbox.setSpacing(20.0D);
+
+        GridPane proxyGridPane = new GridPane();
+        proxyGridPane.setVgap(15.0D);
+        proxyGridPane.setPadding(new Insets(20.0D, 20.0D, 0.0D, 10.0D));
+        Label iconUrlLabel = new Label("icon url：");
+        TextField iconUrlText = new TextField();
+        Label iconHashLabel = new Label("iconHash：");
+        TextField iconHashText = new TextField();
+
+        Button iconHash = new Button("iconHash");
+
+
+        iconHash.setOnAction((e) -> {
+
+            String ste = HttpTool.ImageToBase64ByOnline(iconUrlText.getText());
+
+            int hashcode = Hashing.murmur3_32().hashString(ste.replaceAll("\r", "") + "\n", StandardCharsets.UTF_8).asInt();
+
+            iconHashText.setText("icon_hash=\"" + hashcode + "\"");
+
+
+            System.out.println(ste);
+            System.out.println(hashcode);
+
+        });
+
+
+        proxyGridPane.add(statusHbox, 1, 0);
+        proxyGridPane.add(iconUrlLabel, 0, 2);
+        proxyGridPane.add(iconUrlText, 1, 2);
+        proxyGridPane.add(iconHashLabel, 0, 3);
+        proxyGridPane.add(iconHashText, 1, 3);
+        HBox buttonBox = new HBox();
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setSpacing(20.0D);
+        buttonBox.getChildren().add(iconHash);
+        GridPane.setColumnSpan(buttonBox, 2);
+        proxyGridPane.add(buttonBox, 0, 5);
+        inputDialog.getDialogPane().setContent(proxyGridPane);
+        inputDialog.showAndWait();
     }
 
 
-
+    // 加载
+    public void initialize() {
+        try {
+            this.initToolbar();
+            this.defaultInformation();
+            this.basic();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

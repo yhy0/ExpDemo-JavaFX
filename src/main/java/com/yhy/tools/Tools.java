@@ -8,15 +8,22 @@ package com.yhy.tools;
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Bytes;
 import com.yhy.core.CVE_2020_14882;
 import com.yhy.core.CVE_2021_22986;
 import com.yhy.core.ExploitInterface;
 import javafx.scene.control.Alert;
 import javafx.stage.Window;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import com.google.common.hash.Hashing;
 
 import java.io.*;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
@@ -48,7 +55,7 @@ public class Tools {
         String key1 = "<";
         String key2 = ">";
 
-        if(platform.equals("Linux")) {
+        if (platform.equals("Linux")) {
 
             return "'" + str + "'";
         } else {
@@ -62,8 +69,8 @@ public class Tools {
         int a = str.indexOf(key);
         int i = 0;
         while (a != -1) {
-            stringBuilder1.insert(a + i,escape_str);
-            a = str.indexOf(key,a + 1);
+            stringBuilder1.insert(a + i, escape_str);
+            a = str.indexOf(key, a + 1);
             i++;
         }
 
@@ -111,7 +118,7 @@ public class Tools {
         return sb.reverse().toString();
     }
 
-    public static HashSet<String> read(String path, String encode) {
+    public static HashSet<String> read(String path, String encode, Boolean domain) {
         HashSet list = new HashSet();
 
         try {
@@ -126,8 +133,10 @@ public class Tools {
             BufferedReader br = new BufferedReader(isr);
             String tem = null;
 
-            while((tem = br.readLine()) != null) {
-                tem = checkTheDomain(tem);
+            while ((tem = br.readLine()) != null) {
+                if (domain) {
+                    tem = checkTheDomain(tem);
+                }
                 if (!list.contains(tem)) {
                     list.add(tem);
                 }
@@ -164,29 +173,8 @@ public class Tools {
             ei = new CVE_2021_22986();
         }
 
-        return (ExploitInterface)ei;
+        return (ExploitInterface) ei;
     }
-
-
-//    // 根据cve选择对应的漏洞检测
-//    public static boolean checkAllExp(String target) {
-//        CVE_2020_14882 cve_2020_14882 = new CVE_2020_14882();
-//
-//        try {
-//            if(cve_2020_14882.checkVUL(target)) {
-//                return true;
-////            } else if(cve_2020_14882.checkVUL(target)) {   // 根据实际漏洞检查写
-////                return true;
-//            } else {
-//                return false;
-//            }
-//
-//        } catch (Exception var4) {
-//            System.out.println(" checkAllExp  " + var4.toString());
-//        }
-//
-//        return false;
-//    }
 
 
     public static String str2Hex(String str) {
@@ -194,7 +182,7 @@ public class Tools {
         StringBuilder sb = new StringBuilder("");
         byte[] bs = str.getBytes();
 
-        for(int i = 0; i < bs.length; ++i) {
+        for (int i = 0; i < bs.length; ++i) {
             int bit = (bs[i] & 240) >> 4;
             sb.append(chars[bit]);
             bit = bs[i] & 15;
@@ -209,10 +197,10 @@ public class Tools {
         char[] hexs = hexStr.toCharArray();
         byte[] bytes = new byte[hexStr.length() / 2];
 
-        for(int i = 0; i < bytes.length; ++i) {
+        for (int i = 0; i < bytes.length; ++i) {
             int n = str.indexOf(hexs[2 * i]) * 16;
             n += str.indexOf(hexs[2 * i + 1]);
-            bytes[i] = (byte)(n & 255);
+            bytes[i] = (byte) (n & 255);
         }
 
         return new String(bytes);
@@ -223,11 +211,53 @@ public class Tools {
             Properties pro = new Properties();
             FileInputStream in = new FileInputStream(path);
             pro.load(in);
-            String exp = (String)pro.get("exp");
+            String exp = (String) pro.get("exp");
             return exp;
         } catch (IOException var4) {
-            Logger.getLogger(Tools.class.getName()).log(Level.SEVERE, (String)null, var4);
+            Logger.getLogger(Tools.class.getName()).log(Level.SEVERE, (String) null, var4);
             return "";
         }
     }
+
+
+    public static String fofaHTTP(String emali, String key, String value, int size) throws Exception {
+
+        String qbase64 = Base64.getEncoder().encodeToString(value.getBytes());
+
+        String url = "https://fofa.so/api/v1/search/all?email=" + emali + "&key=" + key + "&qbase64=" + qbase64 + "&full=true&fields=host&size=" + size;
+        System.out.println(url);
+        String result = "";
+
+        result = HttpTool.getHttpReuest(url, "text/xml", "UTF-8");
+        System.out.println(result);
+        String hosts = "";
+        // 解析json格式的返回值，提取host
+        JSONObject jsonObject = new JSONObject(result);
+        JSONArray jsonArray = jsonObject.getJSONArray("results");
+        for (int i = 0; i < jsonArray.length(); i++) {
+            String host = jsonArray.getString(i);
+            hosts += host + "\r\n";
+        }
+
+
+        return hosts;
+    }
+
+
+    public static void iconhash(String emali, String key, String value, int size) throws Exception {
+        String base64Str = "";
+
+
+//        result = HttpTool.getHttpReuest(url, "text/xml", "UTF-8");
+
+        String ste = HttpTool.ImageToBase64ByOnline("https://fofa.so/favicon.ico");
+
+        int hashcode = Hashing.murmur3_32().hashString(base64Str.replaceAll("\r", "") + "\n", StandardCharsets.UTF_8).asInt();
+
+        System.out.println(ste);
+        System.out.println(hashcode);
+
+    }
+
+
 }
