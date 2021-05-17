@@ -1,5 +1,6 @@
 package com.yhy;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.hash.Hashing;
 import com.yhy.core.Constants;
 import com.yhy.core.ExploitInterface;
@@ -21,7 +22,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -34,9 +34,7 @@ import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -484,7 +482,7 @@ public class Controller {
                 this.cmd_info.setText(result);
                 System.out.println(result);
             } catch (Exception var4) {
-                this.cmd_info.setText(var4.toString());
+                this.cmd_info.setText("error: " + var4.toString());
             }
 
         }
@@ -655,19 +653,19 @@ public class Controller {
     @FXML
     // fofa 搜索
     public void fofa_search() {
-
-        int page = (int) this.fofa_size.getValue();
-
-        String fofa_info = this.fofa_info.getText();
-
-        if(fofa_info.length() == 0) {
-            fofa_info = "app=\"Solr\"";
-        }
-
         String result = "";
-
-        File file = new File(Constants.FOFAPATH);
         try {
+            int page = (int) this.fofa_size.getValue();
+
+            String fofa_info = this.fofa_info.getText();
+
+            if(fofa_info.length() == 0) {
+                fofa_info = "app=\"Solr\"";
+            }
+
+            File file = new File(Constants.FOFAPATH);
+
+
             if (file.exists()) {
                 String values = Tools.read(Constants.FOFAPATH,"UTF-8", false).toString();
                 values = values.substring(1,values.length()-1);;
@@ -677,11 +675,20 @@ public class Controller {
                 if(EmaliKey.length == 2) {
                     String email = EmaliKey[0];
                     String key = EmaliKey[1];
-                    result = Tools.fofaHTTP(email, key, fofa_info, page);
 
-                    String[] str = result.split("\r\n");
-                    for (String s:str) {
-                        fofa_result.add(s);
+
+                    String fResult = Tools.fofaHTTP(email, key, fofa_info, page, fofa_result_info);
+
+                    // 不清楚为啥生成的jar文件，这里json不能解析，也不报错，在IDEA中运行就可以
+                    JSONObject object = (JSONObject) JSONObject.parse(fResult);
+                    List<String> listStr = object.parseArray(object.getJSONArray("results").toJSONString(), String.class);
+
+                    for (String s:listStr) {
+                        s = s.replace("\"","").replace("\\r\\n","").replace("\\t","");
+                        String host = s.split(",", 2)[0].replace("[","");
+                        String title = s.split(",", 2)[1].replace("]","");
+                        result += host + "\t\t\t" + title + "\r\n";
+                        this.fofa_result.add(host);
                     }
 
                     this.proxyStatusLabel.setText("fofa查询完成");
@@ -693,15 +700,21 @@ public class Controller {
                     alert.setContentText("fofa 配置错误\n");
 
                     alert.showAndWait();
+
+                    this.proxyStatusLabel.setText("asasdadas配置错误");
                 }
+            } else {
+                this.fofa_result_info.setText("fofa.conf文件没找到！！！！！\r\n");
             }
 
 
         } catch (Exception e) {
             e.printStackTrace();
             result = e.getStackTrace().toString();
+
         }
 
+        this.fofa_result_info.setText(result);
 
         fofa_check.setOnAction((e) -> {
             table_view(fofa_result);
@@ -709,7 +722,6 @@ public class Controller {
 
         });
 
-        this.fofa_result_info.setText(result);
 
     }
 
@@ -737,16 +749,9 @@ public class Controller {
 
 
         iconHash.setOnAction((e) -> {
-
             String ste = HttpTool.ImageToBase64ByOnline(iconUrlText.getText());
-
             int hashcode = Hashing.murmur3_32().hashString(ste.replaceAll("\r", "") + "\n", StandardCharsets.UTF_8).asInt();
-
             iconHashText.setText("icon_hash=\"" + hashcode + "\"");
-
-
-            System.out.println(ste);
-            System.out.println(hashcode);
 
         });
 

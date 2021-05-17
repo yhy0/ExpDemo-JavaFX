@@ -9,15 +9,17 @@ package com.yhy.core;
 public class Constants {
     public static String NAME = "图形化漏洞利用Demo-JavaFx版";
 
-    public static String VERSION = "v1.3 ";
+    public static String VERSION = "v1.4 ";
 
     public static String AUTHOR = "yhy";
 
     public static String BASICINFO = "本工具提供给安全测试人员,安全工程师,进行安全自查使用,请勿非法使用\r\n\r\n" +
             "版本:     " + VERSION + "\r\n\r\n" +
             "Bug反馈:  https://github.com/yhy0/ExpDemo-JavaFX\r\n\r\n" +
+            "V1.4\r\n" +
+            "\t修复生成的jar文件，fofa查询时无反应（mvn生成jar时没有加载第三方包，添加MANIFEST.MF文件指定加载）\r\n" +
             "V1.3\r\n" +
-            "\t增加fofa查询功能\r\n" +
+            "\t增加fofa查询模块，并且fofa高级会员可以通过输入icon的url，计算hash值，查询相同icon的网站\r\n" +
             "V1.2\n" +
             "\t批量扫描模块，添加对存在漏洞的url导出功能\r\n" +
             "\t修改检测漏洞后的显示，存在、不存在、异常\r\n" +

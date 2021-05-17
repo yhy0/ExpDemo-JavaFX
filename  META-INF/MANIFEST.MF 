@@ -1,0 +1,4 @@
+Manifest-Version: 1.4
+Class-Path: lib/fastjson-1.2.76.jar lib/guava-19.0.jar
+Main-Class: com.yhy.Main
+

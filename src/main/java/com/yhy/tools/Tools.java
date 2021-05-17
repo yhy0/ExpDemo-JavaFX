@@ -8,25 +8,19 @@ package com.yhy.tools;
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
-import com.google.common.collect.Lists;
-import com.google.common.primitives.Bytes;
 import com.yhy.core.CVE_2020_14882;
 import com.yhy.core.CVE_2021_22986;
 import com.yhy.core.ExploitInterface;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.stage.Window;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import com.google.common.hash.Hashing;
 
 import java.io.*;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -220,44 +214,17 @@ public class Tools {
     }
 
 
-    public static String fofaHTTP(String emali, String key, String value, int size) throws Exception {
+    public static String fofaHTTP(String emali, String key, String value, int size, TextArea fofa_result_info) throws Exception {
 
         String qbase64 = Base64.getEncoder().encodeToString(value.getBytes());
 
-        String url = "https://fofa.so/api/v1/search/all?email=" + emali + "&key=" + key + "&qbase64=" + qbase64 + "&full=true&fields=host&size=" + size;
+        String url = "https://fofa.so/api/v1/search/all?email=" + emali + "&key=" + key + "&qbase64=" + qbase64 + "&full=true&fields=host,title&size=" + size;
         System.out.println(url);
         String result = "";
 
         result = HttpTool.getHttpReuest(url, "text/xml", "UTF-8");
-        System.out.println(result);
-        String hosts = "";
-        // 解析json格式的返回值，提取host
-        JSONObject jsonObject = new JSONObject(result);
-        JSONArray jsonArray = jsonObject.getJSONArray("results");
-        for (int i = 0; i < jsonArray.length(); i++) {
-            String host = jsonArray.getString(i);
-            hosts += host + "\r\n";
-        }
 
-
-        return hosts;
+        return result;
     }
-
-
-    public static void iconhash(String emali, String key, String value, int size) throws Exception {
-        String base64Str = "";
-
-
-//        result = HttpTool.getHttpReuest(url, "text/xml", "UTF-8");
-
-        String ste = HttpTool.ImageToBase64ByOnline("https://fofa.so/favicon.ico");
-
-        int hashcode = Hashing.murmur3_32().hashString(base64Str.replaceAll("\r", "") + "\n", StandardCharsets.UTF_8).asInt();
-
-        System.out.println(ste);
-        System.out.println(hashcode);
-
-    }
-
 
 }

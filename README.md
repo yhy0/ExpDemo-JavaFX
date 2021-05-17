@@ -1,5 +1,9 @@
 ## 更新
 
+### V1.4
+
+修复生成的jar文件，fofa查询时无反应（mvn生成jar时没有加载第三方包，添加MANIFEST.MF文件指定加载）
+
 ### V1.3
 
 1.  增加fofa查询模块，并且fofa高级会员可以通过输入icon的url，计算hash值，查询相同icon的网站
