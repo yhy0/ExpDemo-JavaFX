@@ -1,5 +1,19 @@
 ## 更新
 
+### V1.6
+
+使用log4j输出日志到文件
+
+### V1.5
+
+界面修改，搞(抄)了个抽屉样式来切换不同的漏洞利用种类 ,打包方式更改 使用**mvn package assembly:single** 生成 jar文件。
+
+http://www.zhouruikang.cn/2020/0330/javafx03-drawer/
+
+详细见[更新1.5.md](更新1.5.md)
+
+![JavaFX](images/yhy.gif)
+
 ### V1.4
 
 修复生成的jar文件，fofa查询时无反应（mvn生成jar时没有加载第三方包，添加MANIFEST.MF文件指定加载）
@@ -40,6 +54,13 @@
 .
 ├── ExpDemo-JavaFX.iml
 ├── pom.xml	maven工程的基本文件
+├── META-INF		指定在打包时，所需要的第三方依赖包，这样就不要到maven仓库中下载了，防止网络不好，打包失败
+│   └── MANIFEST.MF
+├── lib						第三方依赖包，所需要的第三方依赖包都放入这个文件夹，然后在MANIFEST.MF中指定路径
+│   ├── fastjson-1.2.76.jar
+│   ├── fontawesomefx-8.9.jar
+│   ├── guava-19.0.jar
+│   └── jfoenix-8.0.10.jar
 └── src	
     └── main
         ├── deploy
@@ -95,15 +116,17 @@ EXP具体编写请参考 `src/main/java/com/yhy/core/CVE_2020_14882.java` 示例
 
 #### 3.3 部署，发布
 
-当一切编写完成，bug修复完毕，在项目根目录下执行 `mvn jfx:jar` 即可生成 jar文件。
+当一切编写完成，bug修复完毕，在项目根目录下执行 **mvn package assembly:single** 即可生成 jar文件。
 
-对方没有Java环境，不想安装怎么办？
+对方没有Java环境怎么办？
 
-使用`mvn jfx:native` 命令生产对应平台的文件，比如Mac 下，执行命令`mvn jfx:native` 命令就会在 **target/jfx/native** 目录下生成打包后应用，带可执行文件，带 JRE 运行环境。
+使用 **mvn jfx:native** 命令生产对应平台的文件，比如Mac 下，执行命令**mvn jfx:native**命令就会在 **target/jfx/native** 目录下生成打包后应用(win下生成exe)，带可执行文件，带 JRE 运行环境，超大，200+M。
 
- `mvn clean` 用于清除生成的文件。
+ **mvn clean**用于清除生成的文件。
 
- 使用**target/jfx/app/ExpDemo-JavaFX-1.0-jfx.jar** 下的jar文件，**不要**使用 **target** 目录下的jar文件, **target** 目录下的jar文件命令执行不知道为啥没有回显
+ 使用**target/ExpDemo-JavaFX-1.5-jar-with-dependencies.jar** 的jar文件，也就是最大的这个**jar** 
+
+>   若是**mvn jfx:jar** 生成的小文件jar包，必须要将lib文件夹和这个生成的jar文件在一个目录下
 
 ## 0x04 界面修改
 

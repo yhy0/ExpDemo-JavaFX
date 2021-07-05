@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<VBox id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="655.0" prefWidth="160.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Pane prefHeight="100.0" prefWidth="160.0">
+            <children>
+                <FontAwesomeIconView glyphName="PIED_PIPER_ALT" layoutX="45.0" layoutY="81.0" size="60">
+                    <fill>
+                        <LinearGradient endX="1.0" endY="1.0">
+                            <stops>
+                                <Stop color="#5ab4f5" />
+                                <Stop color="#b12a2a" offset="1.0" />
+                            </stops>
+                        </LinearGradient>
+                    </fill>
+                </FontAwesomeIconView>
+            </children>
+        </Pane>
+        <JFXButton accessibleText="Struts2" graphicTextGap="10.0" prefHeight="56.0" prefWidth="169.0" styleClass="menu" text="Struts2" textFill="#fffffff7">
+            <font>
+                <Font size="23.0" />
+            </font>
+            <graphic>
+                <FontAwesomeIconView glyphName="SCRIBD" size="25">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#4d9dab" />
+                        <Stop color="#bc6565" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill></FontAwesomeIconView>
+            </graphic>
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </JFXButton>
+        <JFXButton accessibleText="Weblogic" graphicTextGap="10.0" prefHeight="50.0" prefWidth="188.0" styleClass="menu" text="Weblogic" textFill="WHITE">
+            <graphic>
+                <FontAwesomeIconView glyphName="GOOGLE_WALLET" size="25">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#d72f2f" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill></FontAwesomeIconView>
+            </graphic>
+            <font>
+                <Font size="23.0" />
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </JFXButton>
+        <JFXButton accessibleText="Shiro" graphicTextGap="10.0" prefHeight="50.0" prefWidth="160.0" styleClass="menu" text="Shiro" textFill="WHITE">
+            <graphic>
+                <FontAwesomeIconView glyphName="LASTFM" size="25">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#176129" />
+                        <Stop color="#cd8080" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill></FontAwesomeIconView>
+            </graphic>
+            <font>
+                <Font size="23.0" />
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </JFXButton>
+        <JFXButton accessibleText="Fastjson" graphicTextGap="10.0" prefHeight="50.0" prefWidth="160.0" styleClass="menu" text="Fastjson" textFill="WHITE">
+            <graphic>
+                <FontAwesomeIconView glyphName="FOURSQUARE" size="25">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#3081dd" />
+                        <Stop color="#3081dd" offset="0.007518796992481203" />
+                        <Stop color="#d3bdbd" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill></FontAwesomeIconView>
+            </graphic>
+            <font>
+                <Font size="23.0" />
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </JFXButton>
+
+        <JFXButton accessibleText="Others" graphicTextGap="10.0" prefHeight="50.0" prefWidth="160.0" styleClass="menu" text="Others" textFill="WHITE">
+            <graphic>
+                <FontAwesomeIconView glyphName="XING" size="25">
+                    <fill>
+                        <LinearGradient endX="1.0" endY="1.0">
+                            <stops>
+                                <Stop color="#2b5d97" />
+                                <Stop color="#9a2626" offset="1.0" />
+                            </stops>
+                        </LinearGradient>
+                    </fill></FontAwesomeIconView>
+            </graphic>
+            <font>
+                <Font size="23.0" />
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </JFXButton>
+      <Pane prefHeight="126.0" prefWidth="160.0">
+         <children>
+            <ImageView fitHeight="67.0" fitWidth="97.0" layoutX="46.0" layoutY="63.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../img/sec.png" />
+                </image>
+            </ImageView>
+         </children>
+      </Pane>
+        <JFXButton accessibleText="yhy" layoutX="1.0" layoutY="132.0" prefHeight="44.0" prefWidth="160.0" styleClass="menu" text="yhy">
+           <font>
+              <Font size="23.0" />
+           </font>
+           <textFill>
+              <LinearGradient endX="1.0" endY="1.0">
+                 <stops>
+                    <Stop color="#e40000" />
+                    <Stop color="WHITE" offset="1.0" />
+                 </stops>
+              </LinearGradient>
+           </textFill>
+        </JFXButton>
+
+
+    </children>
+</VBox>

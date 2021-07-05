@@ -1,0 +1,3 @@
+<template>
+  <input-field default="11">IJ_JAVAFX_VERSION</input-field>
+</template>
