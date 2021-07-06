@@ -29,7 +29,6 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Window;
 import org.apache.log4j.Logger;
 
-import javax.xml.soap.Text;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class MainController {
     @FXML
     private Label tool_name;
     @FXML
-    public static Label proxyStatusLabel = new Label();
+    private Label proxyStatusLabel;
     @FXML
     private Label author;
 
@@ -187,15 +186,15 @@ public class MainController {
 
 
             } catch (Exception var) {
-                this.proxyStatusLabel.setText("代理服务器配置加载失败。");
+                proxyStatusLabel.setText("代理服务器配置加载失败。");
                 logger.error(var.getStackTrace());
             }
 
 
             saveBtn.setOnAction((e) -> {
                 if (disableRadio.isSelected()) {
-                    this.settingInfo.put("proxy", (Object)null);
-                    this.proxyStatusLabel.setText("");
+                    settingInfo.put("proxy", (Object)null);
+                    proxyStatusLabel.setText("");
                     inputDialog.getDialogPane().getScene().getWindow().hide();
                 } else {
 
@@ -212,24 +211,25 @@ public class MainController {
                         Authenticator.setDefault((Authenticator)null);
                     }
 
-                    this.settingInfo.put("username", userNameText.getText());
-                    this.settingInfo.put("password", passwordText.getText());
+                    settingInfo.put("username", userNameText.getText());
+                    settingInfo.put("password", passwordText.getText());
                     InetSocketAddress proxyAddr = new InetSocketAddress(IPText.getText(), Integer.parseInt(PortText.getText()));
 
-                    this.settingInfo.put("ip", IPText.getText());
-                    this.settingInfo.put("port", PortText.getText());
+                    settingInfo.put("ip", IPText.getText());
+                    settingInfo.put("port", PortText.getText());
                     String proxy_type = typeCombo.getValue().toString();
                     settingInfo.put("type", proxy_type);
                     Proxy proxy;
                     if (proxy_type.equals("HTTP")) {
                         proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
-                        this.settingInfo.put("proxy", proxy);
+                        settingInfo.put("proxy", proxy);
                     } else if (proxy_type.equals("SOCKS")) {
                         proxy = new Proxy(Proxy.Type.SOCKS, proxyAddr);
-                        this.settingInfo.put("proxy", proxy);
+                        settingInfo.put("proxy", proxy);
                     }
 
-                    this.proxyStatusLabel.setText("代理生效中");
+                    proxyStatusLabel.setText("代理生效中");
+                    System.out.println(proxyStatusLabel.getText());
                     inputDialog.getDialogPane().getScene().getWindow().hide();
                 }
             });
@@ -294,8 +294,8 @@ public class MainController {
                         String key = EmaliKey[1];
                         fofaEmailText.setText(email);
                         fofaKeyText.setText(key);
-                        this.settingInfo.put("fofa_email", email);
-                        this.settingInfo.put("fofa_key", key);
+                        settingInfo.put("fofa_email", email);
+                        settingInfo.put("fofa_key", key);
                     } else {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("提示");
@@ -469,6 +469,10 @@ public class MainController {
         ht.setRate(ht.getRate() * -1);
         ht.play();
         drawersStack.toggle(leftDrawer);
+    }
+
+    public void setProxyStatusLabel(String value) {
+        this.proxyStatusLabel.setText(value);
     }
 
 }

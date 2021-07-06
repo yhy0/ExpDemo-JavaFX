@@ -36,7 +36,7 @@ import java.util.concurrent.Future;
  */
 
 // JavaFX图形化界面的控制类
-public class Struts2Controller {
+public class Struts2Controller extends MainController{
     @FXML
     private ChoiceBox<String> choice_cve;
     @FXML
@@ -91,12 +91,12 @@ public class Struts2Controller {
 
     // 界面显示  一些默认的基本信息，漏洞列表、编码选项、线程、shell、页脚
     public void defaultInformation() {
-        this.choice_cve.setValue(Constants.CVES[0]);
-        for (String cve : Constants.CVES) {
+        this.choice_cve.setValue(Constants.STRUTS2[0]);
+        for (String cve : Constants.STRUTS2) {
             this.choice_cve.getItems().add(cve);
         }
-
         this.encoding.setValue(Constants.ENCODING[0]);
+
         for (String coding : Constants.ENCODING) {
             this.encoding.getItems().add(coding);
         }
@@ -117,7 +117,7 @@ public class Struts2Controller {
 
         // 命令执行
         this.cmd_info.setText(" ");
-        this.cmd_info.setEditable(false);
+//        this.cmd_info.setEditable(false);
         this.cmd_info.setWrapText(true);
 
         this.upload_msg.setText("默认为 冰蝎3 的shell.jspx , 密码：rebeyond");
@@ -139,7 +139,7 @@ public class Struts2Controller {
     // 基本信息
     public void basic() {
         this.basic_info.setText(Constants.BASICINFO);
-        this.basic_info.setEditable(false);
+//        this.basic_info.setEditable(false);
         this.basic_info.setWrapText(true);
 
     }
@@ -156,7 +156,7 @@ public class Struts2Controller {
             try {
 
                 if(this.ei.checkVUL(url)) {
-                    this.basic_info.setText(url + " 存在 " + cve + "漏洞 \r\n");
+                    this.basic_info.setText(url + " 存在 " + cve + "漏洞" + "\r\n\r\nwebPath:\r\n\t" + this.ei.getWebPath());
                 } else {
                     this.basic_info.setText(url + " 不存在 " + cve + "漏洞 \r\n");
                 }
@@ -182,14 +182,27 @@ public class Struts2Controller {
         if(this.ei.isVul()) {
             try {
                 String result = this.ei.exeCMD(cmd, encoding);
-                this.cmd_info.setText(result);
-                System.out.println(result);
+                if(result.contains("fail")) {
+                    this.cmd_info.setText("命令执行失败");
+                } else {
+                    this.cmd_info.setText(result);
+                }
+
             } catch (Exception var4) {
                 this.cmd_info.setText("error: " + var4.toString());
             }
 
+        } else {
+            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
         }
 
+    }
+
+
+    // 表格清空
+    @FXML
+    public void clear_all() {
+        this.table_view.getItems().clear();
     }
 
     // 点击上传文件，获取上传的文件信息
@@ -209,9 +222,9 @@ public class Struts2Controller {
 
             if(this.ei.isVul()) {
                 try {
-                    String web_shell_path = this.ei.uploadFile(shell_info, upload_path, platform);
+                    String result = this.ei.uploadFile(shell_info, upload_path, platform);
 
-                    this.upload_msg.setText("文件上传成功！地址：" + web_shell_path);
+                    this.upload_msg.setText(result);
                 } catch (Exception var4) {
                     this.upload_msg.setText(var4.toString());
                 }
@@ -392,8 +405,7 @@ public class Struts2Controller {
                         result += host + "\t\t\t" + title + "\r\n";
                         this.fofa_result.add(host);
                     }
-
-                    MainController.proxyStatusLabel.setText("fofa查询完成");
+                    setProxyStatusLabel("fofa查询完成");
 
                 } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -403,7 +415,7 @@ public class Struts2Controller {
 
                     alert.showAndWait();
 
-                    MainController.proxyStatusLabel.setText("asasdadas配置错误");
+                    setProxyStatusLabel("fofa 配置错误");
                 }
             } else {
                 this.fofa_result_info.setText("fofa.conf文件没找到！！！！！\r\n");
@@ -420,8 +432,7 @@ public class Struts2Controller {
 
         fofa_check.setOnAction((e) -> {
             table_view(fofa_result);
-            MainController.proxyStatusLabel.setText("批量检查完成，请到批量检查界面查看");
-
+            setProxyStatusLabel("批量检查完成，请到批量检查界面查看");
         });
 
 

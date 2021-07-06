@@ -40,19 +40,23 @@ public class HttpTool {
         HttpURLConnection hc = null;
         InputStream inputStream = null;
 
+        // url中没有协议，默认走http协议
+        if(!requestUrl.contains("http")) {
+            requestUrl = "http://" + requestUrl;
+        }
+        //代理
+        Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
+
         try {
             URL url = new URL(requestUrl);
+
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
-
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
 
-                //代理
-                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
-
-                if (proxy != null) {
+                if(proxy != null) {
                     hsc = (HttpsURLConnection)url.openConnection(proxy);
                 } else {
                     hsc = (HttpsURLConnection)url.openConnection();
@@ -61,8 +65,7 @@ public class HttpTool {
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
-                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
-                if (proxy != null) {
+                if(proxy != null) {
                     hc = (HttpURLConnection)url.openConnection(proxy);
                 } else {
                     hc = (HttpURLConnection)url.openConnection();
@@ -101,15 +104,14 @@ public class HttpTool {
             String result = readString(inputStream, encoding);
             return result;
         } catch (IOException ie) {
-            logger.error(ie);
-
+            logger.error(ie.getStackTrace());
             if (hsc != null)
                 return readString(hsc.getErrorStream(), encoding);
             if (hc != null)
                 return readString(hc.getErrorStream(), encoding);
             return "";
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getStackTrace());
             throw e;
         } finally {
             if (hsc != null)
@@ -128,15 +130,21 @@ public class HttpTool {
         InputStream inputStream = null;
         InputStreamReader isr = null;
         BufferedReader br = null;
+        // url中没有协议，默认走http协议
+        if(!requestUrl.contains("http")) {
+            requestUrl = "http://" + requestUrl;
+        }
+
         try {
             URL url = new URL(requestUrl);
+            //代理
+            Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
+
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
-                //代理
-                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
 
                 if (proxy != null) {
                     hsc = (HttpsURLConnection)url.openConnection(proxy);
@@ -148,7 +156,6 @@ public class HttpTool {
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
-                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
                 if (proxy != null) {
                     hc = (HttpURLConnection)url.openConnection(proxy);
                 } else {
@@ -242,7 +249,6 @@ public class HttpTool {
                 baos.write(arr, 0, len);
             }
 
-
         } catch (IOException e) {
             logger.error(e.getStackTrace());
         } finally {
@@ -269,16 +275,21 @@ public class HttpTool {
 
         String res = null;
 
+        // url中没有协议，默认走http协议
+        if(!requestUrl.contains("http")) {
+            requestUrl = "http://" + requestUrl;
+        }
+
         try {
             URL url = new URL(requestUrl);
+            //代理
+            Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
 
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
-                //代理
-                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
 
                 if (proxy != null) {
                     hsc = (HttpsURLConnection)url.openConnection(proxy);
@@ -290,7 +301,6 @@ public class HttpTool {
                 httpUrlConn = hsc;
             } else {
 
-                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
                 if (proxy != null) {
                     hc = (HttpURLConnection)url.openConnection(proxy);
                 } else {
@@ -395,19 +405,36 @@ public class HttpTool {
         InputStream inputStream = null;
         InputStreamReader isr = null;
         BufferedReader br = null;
+
+        // url中没有协议，默认走http协议
+        if(!requestUrl.contains("http")) {
+            requestUrl = "http://" + requestUrl;
+        }
         try {
             URL url = new URL(requestUrl);
+            //代理
+            Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
-                hsc = (HttpsURLConnection)url.openConnection();
+
+                if (proxy != null) {
+                    hsc = (HttpsURLConnection)url.openConnection(proxy);
+                } else {
+                    hsc = (HttpsURLConnection)url.openConnection();
+                }
+
                 hsc.setSSLSocketFactory(ssf);
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
-                hc = (HttpURLConnection)url.openConnection();
+                if (proxy != null) {
+                    hc = (HttpURLConnection)url.openConnection(proxy);
+                } else {
+                    hc = (HttpURLConnection)url.openConnection();
+                }
                 hc.setRequestMethod(requestMethod);
                 httpUrlConn = hc;
             }

@@ -2,10 +2,7 @@ package fun.fireline.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.hash.Hashing;
-import fun.fireline.core.Constants;
-import fun.fireline.core.ExploitInterface;
-import fun.fireline.core.Job;
-import fun.fireline.core.VulInfo;
+import fun.fireline.core.*;
 import fun.fireline.tools.HttpTool;
 import fun.fireline.tools.Tools;
 import javafx.collections.FXCollections;
@@ -41,7 +38,7 @@ import java.util.concurrent.Future;
 
 
  // JavaFX图形化界面的控制类
-public class OthersController {
+public class OthersController extends MainController{
     private static final Logger logger = Logger.getLogger(OthersController.class);
 
     @FXML
@@ -127,7 +124,6 @@ public class OthersController {
 
         this.upload_msg.setText("默认为 冰蝎3 的shell.jspx , 密码：rebeyond");
 
-
         this.platform.setValue("Linux");
         this.platform.getItems().add("Linux");
         this.platform.getItems().add("Windows");
@@ -146,7 +142,6 @@ public class OthersController {
         this.basic_info.setText(Constants.BASICINFO);
         this.basic_info.setEditable(false);
         this.basic_info.setWrapText(true);
-
     }
 
     // 点击检测，获取url 和 要检测的漏洞
@@ -200,7 +195,6 @@ public class OthersController {
         String shell_info = this.upload_info.getText();
         String upload_path = this.upload_path.getText();
         String platform = this.platform.getValue().toString().trim();
-
 
         if(upload_path.length() == 0) {
             upload_path = "test.jspx";
@@ -258,7 +252,6 @@ public class OthersController {
             logger.error(e.getStackTrace());
         }
 
-
         //映射数据进每列
         this.id.setCellValueFactory(new PropertyValueFactory<>("id"));
         this.id.setSortable(false);
@@ -268,7 +261,7 @@ public class OthersController {
 
         this.isVul.setCellValueFactory(new PropertyValueFactory<>("isVul"));
 
-        // 所有项目添加进datas
+        // 所有项目添加进 datas
         this.table_view.setItems(this.datas);
 
         long endTime   = System.currentTimeMillis(); //程序结束记录时间
@@ -312,7 +305,6 @@ public class OthersController {
     @FXML
     // 导出漏洞存在的url
     public void export() {
-
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -343,6 +335,13 @@ public class OthersController {
             alert.setContentText("导出成功!保存路径:\n"+exportFilePath);
             alert.showAndWait();
         }
+    }
+
+
+    // 表格清空
+    @FXML
+    public void clear_all() {
+        this.table_view.getItems().clear();
     }
 
 
@@ -384,7 +383,7 @@ public class OthersController {
                         this.fofa_result.add(host);
                     }
 
-                    MainController.proxyStatusLabel.setText("fofa查询完成");
+                    setProxyStatusLabel("fofa查询完成");
 
                 } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -394,7 +393,7 @@ public class OthersController {
 
                     alert.showAndWait();
 
-                    MainController.proxyStatusLabel.setText("asasdadas配置错误");
+                    setProxyStatusLabel("fofa 配置错误");
                 }
             } else {
                 this.fofa_result_info.setText("fofa.conf文件没找到！！！！！\r\n");
@@ -404,17 +403,14 @@ public class OthersController {
         } catch (Exception e) {
             logger.error(e.getStackTrace());
             result = e.getStackTrace().toString();
-
         }
 
         this.fofa_result_info.setText(result);
 
         fofa_check.setOnAction((e) -> {
             table_view(fofa_result);
-            MainController.proxyStatusLabel.setText("批量检查完成，请到批量检查界面查看");
-
+            setProxyStatusLabel("批量检查完成，请到批量检查界面查看");
         });
-
 
     }
 

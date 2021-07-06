@@ -10,6 +10,8 @@ package fun.fireline.tools;
 
 import fun.fireline.core.CVE_2021_22986;
 import fun.fireline.core.ExploitInterface;
+import fun.fireline.exp.apache.struts2.S2_005;
+import fun.fireline.exp.cms.nc.CNVD_2021_30167;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.stage.Window;
@@ -159,11 +161,13 @@ public class Tools {
     public static ExploitInterface getExploit(String select) {
         ExploitInterface ei = null;
 
-        if (select.startsWith("CVE-2021-22986")) {
+        if (select.contains("CVE-2021-22986")) {
             // 这里创建你的cve漏洞检测，注意要实现 ExploitInterface 接口
             ei = new CVE_2021_22986();
-        } else if(select.startsWith("Shiro550WithNoCC")){
-
+        } else if(select.contains("CNVD-2021-30167")){
+            ei = new CNVD_2021_30167();
+        }else if(select.contains("S2-005")) {
+            ei = new S2_005();
         }
 
         return (ExploitInterface) ei;

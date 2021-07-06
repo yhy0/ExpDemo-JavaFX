@@ -14,12 +14,15 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="631.0" prefWidth="859.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fun.fireline.controller.Struts2Controller">
+<AnchorPane prefHeight="635.0" prefWidth="901.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fun.fireline.controller.Struts2Controller">
 
    <children>
-      <ChoiceBox fx:id="choice_cve" layoutX="84.0" layoutY="4.0" prefHeight="27.0" prefWidth="314.0" />
-      <TextField fx:id="url" layoutX="466.0" layoutY="6.0" prefHeight="27.0" prefWidth="213.0" promptText="http://127.0.0.1" />
-      <Button fx:id="check" layoutX="715.0" layoutY="4.0" mnemonicParsing="false" onAction="#get_url" text="检         测">
+      <ChoiceBox fx:id="choice_cve" layoutX="115.0" layoutY="4.0" prefHeight="27.0" prefWidth="242.0" />
+      <TextField fx:id="url" layoutX="431.0" layoutY="5.0" prefHeight="29.0" prefWidth="318.0" promptText="http://127.0.0.1">
+         <font>
+            <Font size="15.0" />
+         </font></TextField>
+      <Button fx:id="check" layoutX="769.0" layoutY="4.0" mnemonicParsing="false" onAction="#get_url" text="检         测">
          <textFill>
             <LinearGradient endX="1.0" endY="1.0">
                <stops>
@@ -31,13 +34,16 @@
          <font>
             <Font size="15.0" />
          </font></Button>
-      <TabPane id="JFXTabPane" layoutY="36.0" prefHeight="594.0" prefWidth="859.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutY="36.0" prefHeight="594.0" prefWidth="901.0" tabClosingPolicy="UNAVAILABLE">
          <tabs>
             <Tab text="基本信息">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="554.0" prefWidth="851.0">
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="644.0" prefWidth="901.0">
                      <children>
-                        <TextArea fx:id="basic_info" layoutX="-1.0" prefHeight="486.0" prefWidth="914.0" AnchorPane.bottomAnchor="-54.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-62.0" AnchorPane.topAnchor="0.0" />
+                        <TextArea fx:id="basic_info" layoutX="-1.0" layoutY="38.0" prefHeight="587.0" prefWidth="987.0" AnchorPane.bottomAnchor="-64.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-85.0" AnchorPane.topAnchor="38.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font></TextArea>
                      </children>
                   </AnchorPane>
                </content>
@@ -46,8 +52,11 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="cmd" layoutX="61.0" layoutY="8.0" prefHeight="27.0" prefWidth="537.0" promptText="whoami" />
-                        <Button fx:id="execute" layoutX="753.0" layoutY="5.0" mnemonicParsing="false" onAction="#get_execute_cmd" text="执行">
+                        <TextField fx:id="cmd" layoutX="146.0" layoutY="7.0" prefHeight="27.0" prefWidth="498.0" promptText="whoami">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextField>
+                        <Button fx:id="execute" layoutX="801.0" layoutY="5.0" mnemonicParsing="false" onAction="#get_execute_cmd" text="执行">
                            <textFill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -59,9 +68,12 @@
                            <font>
                               <Font size="15.0" />
                            </font></Button>
-                        <ChoiceBox fx:id="encoding" layoutX="627.0" layoutY="7.0" prefHeight="27.0" prefWidth="94.0" />
-                        <TextArea fx:id="cmd_info" layoutY="43.0" prefHeight="519.0" prefWidth="859.0" />
-                        <Text layoutX="17.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="命令">
+                        <ChoiceBox fx:id="encoding" layoutX="670.0" layoutY="7.0" prefHeight="27.0" prefWidth="94.0" />
+                        <TextArea fx:id="cmd_info" layoutY="40.0" prefHeight="525.0" prefWidth="901.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
+                        <Text layoutX="91.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="命令">
                            <fill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -82,9 +94,15 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextArea fx:id="upload_info" layoutY="38.0" prefHeight="479.0" prefWidth="859.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="38.0" />
-                        <TextField fx:id="upload_path" layoutX="68.0" layoutY="7.0" prefHeight="27.0" prefWidth="447.0" promptText="test.jspx" />
-                        <Button fx:id="upload" layoutX="661.0" layoutY="4.0" mnemonicParsing="false" onAction="#get_shell_file" text="上传文件">
+                        <TextArea fx:id="upload_info" layoutY="38.0" prefHeight="482.0" prefWidth="901.0" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="38.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
+                        <TextField fx:id="upload_path" layoutX="174.0" layoutY="5.0" prefHeight="27.0" prefWidth="425.0" promptText="test.jspx">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextField>
+                        <Button fx:id="upload" layoutX="757.0" layoutY="4.0" mnemonicParsing="false" onAction="#get_shell_file" text="上传文件">
                            <textFill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -97,7 +115,7 @@
                               <Font size="15.0" />
                            </font>
                         </Button>
-                        <Text layoutX="13.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="文件名">
+                        <Text layoutX="103.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="文件名">
                            <fill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -110,8 +128,11 @@
                               <Font size="15.0" />
                            </font>
                         </Text>
-                        <ChoiceBox fx:id="platform" layoutX="546.0" layoutY="6.0" prefHeight="27.0" prefWidth="85.0" />
-                        <TextArea fx:id="upload_msg" layoutY="517.0" prefHeight="43.0" prefWidth="859.0" />
+                        <ChoiceBox fx:id="platform" layoutX="634.0" layoutY="4.0" prefHeight="27.0" prefWidth="85.0" />
+                        <TextArea fx:id="upload_msg" layoutY="519.0" prefHeight="43.0" prefWidth="901.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
                      </children>
                   </AnchorPane>
                </content>
@@ -120,8 +141,8 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ChoiceBox fx:id="thread" layoutX="66.0" layoutY="6.0" prefHeight="3.0" prefWidth="36.0" />
-                        <Text layoutX="19.0" layoutY="26.0" strokeType="OUTSIDE" strokeWidth="0.0" text="线程">
+                        <ChoiceBox fx:id="thread" layoutX="555.0" layoutY="6.0" prefHeight="3.0" prefWidth="36.0" />
+                        <Text layoutX="505.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="线程">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -134,7 +155,7 @@
                               </LinearGradient>
                            </fill>
                         </Text>
-                        <Button fx:id="import_file" layoutX="480.0" layoutY="5.0" mnemonicParsing="false" onAction="#batch_test" prefHeight="18.0" prefWidth="50.0" text="导入">
+                        <Button fx:id="import_file" layoutX="363.0" layoutY="5.0" mnemonicParsing="false" onAction="#batch_test" prefHeight="18.0" prefWidth="50.0" text="导入">
                            <textFill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -147,8 +168,11 @@
                               <Font size="15.0" />
                            </font>
                         </Button>
-                        <TextField fx:id="file_path" layoutX="129.0" layoutY="6.0" prefHeight="27.0" prefWidth="329.0" />
-                        <Text fx:id="time" layoutX="617.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="用时    %s">
+                        <TextField fx:id="file_path" layoutX="71.0" layoutY="6.0" prefHeight="27.0" prefWidth="275.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextField>
+                        <Text fx:id="time" layoutX="608.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="用时    %s" wrappingWidth="90.3125">
                            <fill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -158,18 +182,31 @@
                               </LinearGradient>
                            </fill>
                            <font>
-                              <Font size="15.0" />
+                              <Font size="14.0" />
                            </font>
                         </Text>
-                        <TableView fx:id="table_view" layoutY="40.0" prefHeight="524.0" prefWidth="859.0">
+                        <TableView fx:id="table_view" layoutY="40.0" prefHeight="524.0" prefWidth="901.0">
                            <columns>
-                              <TableColumn fx:id="id" prefWidth="57.0" text="序号" />
-                              <TableColumn fx:id="target" prefWidth="681.0" text="目标" />
-                              <TableColumn fx:id="isVul" prefWidth="120.0" text="是否存在漏洞" />
+                              <TableColumn fx:id="id" prefWidth="81.0" text="序号" />
+                              <TableColumn fx:id="target" prefWidth="663.0" text="目标" />
+                              <TableColumn fx:id="isVul" prefWidth="156.0" text="是否存在漏洞" />
                            </columns>
                         </TableView>
-                        <Text fx:id="time1" fill="#946464" layoutX="714.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PS:  双击行复制url" />
-                        <Button fx:id="export_file" layoutX="550.0" layoutY="5.0" mnemonicParsing="false" onAction="#export" prefHeight="18.0" prefWidth="50.0" text="导出">
+                        <Text fx:id="time1" fill="#946464" layoutX="776.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PS:  双击行复制url" />
+                        <Button fx:id="export_file" layoutX="438.0" layoutY="5.0" mnemonicParsing="false" onAction="#export" prefHeight="18.0" prefWidth="50.0" text="导出">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <textFill>
+                              <LinearGradient endX="1.0" endY="1.0">
+                                 <stops>
+                                    <Stop color="BLACK" />
+                                    <Stop color="#d34c4c" offset="1.0" />
+                                 </stops>
+                              </LinearGradient>
+                           </textFill>
+                        </Button>
+                        <Button fx:id="clear_all" layoutX="704.0" layoutY="3.0" mnemonicParsing="false" onAction="#clear_all" prefHeight="18.0" prefWidth="50.0" text="清空">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -189,8 +226,11 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="fofa_info" layoutX="66.0" layoutY="8.0" prefHeight="27.0" prefWidth="402.0" promptText="app=&quot;Solr&quot;" />
-                        <Button layoutX="588.0" layoutY="6.0" mnemonicParsing="false" onAction="#fofa_search" text="FOFA">
+                        <TextField fx:id="fofa_info" layoutX="125.0" layoutY="7.0" prefHeight="27.0" prefWidth="397.0" promptText="app=&quot;Solr&quot;">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextField>
+                        <Button layoutX="643.0" layoutY="6.0" mnemonicParsing="false" onAction="#fofa_search" text="FOFA">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -203,8 +243,11 @@
                               </LinearGradient>
                            </textFill>
                         </Button>
-                        <TextArea fx:id="fofa_result_info" layoutY="43.0" prefHeight="519.0" prefWidth="859.0" />
-                        <Text layoutX="17.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FOFA">
+                        <TextArea fx:id="fofa_result_info" layoutY="43.0" prefHeight="519.0" prefWidth="901.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
+                        <Text layoutX="70.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FOFA">
                            <fill>
                               <LinearGradient endX="1.0" endY="1.0">
                                  <stops>
@@ -217,8 +260,8 @@
                               <Font size="15.0" />
                            </font>
                         </Text>
-                        <ChoiceBox fx:id="fofa_size" layoutX="489.0" layoutY="7.0" prefHeight="27.0" prefWidth="67.0" />
-                        <Button fx:id="fofa_check" layoutX="681.0" layoutY="6.0" mnemonicParsing="false" text="Check">
+                        <ChoiceBox fx:id="fofa_size" layoutX="546.0" layoutY="7.0" prefHeight="27.0" prefWidth="67.0" />
+                        <Button fx:id="fofa_check" layoutX="727.0" layoutY="6.0" mnemonicParsing="false" text="Check">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -231,7 +274,7 @@
                               </LinearGradient>
                            </textFill>
                         </Button>
-                        <Button layoutX="769.0" layoutY="6.0" mnemonicParsing="false" onAction="#fofa_icon" text="ICON">
+                        <Button layoutX="813.0" layoutY="6.0" mnemonicParsing="false" onAction="#fofa_icon" text="ICON">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -250,7 +293,7 @@
             </Tab>
          </tabs>
       </TabPane>
-      <Text layoutX="11.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="选择漏洞">
+      <Text layoutX="39.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="选择漏洞">
          <fill>
             <LinearGradient endX="1.0" endY="1.0">
                <stops>
@@ -263,7 +306,7 @@
             <Font size="15.0" />
          </font>
       </Text>
-      <Text layoutX="421.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="地址">
+      <Text layoutX="383.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="地址">
          <fill>
             <LinearGradient endX="1.0" endY="1.0">
                <stops>
