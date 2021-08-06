@@ -187,7 +187,7 @@ public class MainController {
 
             } catch (Exception var) {
                 proxyStatusLabel.setText("代理服务器配置加载失败。");
-                logger.error(var.getStackTrace());
+                logger.error(var);
             }
 
 
@@ -309,7 +309,7 @@ public class MainController {
 
             } catch (Exception var) {
                 this.proxyStatusLabel.setText("fofa配置加载失败。");
-                logger.error(var.getStackTrace());
+                logger.error(var);
             }
 
 
@@ -386,7 +386,7 @@ public class MainController {
                         try {
                             Desktop.getDesktop().browse(new URL("https://github.com/yhy0").toURI());
                         } catch (Exception e1) {
-                            logger.error(e1.getStackTrace());
+                            logger.error(e1);
                         }
                     } else {
                         refreshPage(node.getAccessibleText());
@@ -461,7 +461,7 @@ public class MainController {
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
     }
 

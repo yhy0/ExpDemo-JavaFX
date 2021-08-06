@@ -50,7 +50,7 @@ public class CVE_2020_14882 implements ExploitInterface {
             return flag;
 
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
 
         return false;
@@ -69,7 +69,7 @@ public class CVE_2020_14882 implements ExploitInterface {
             return result + "\r\n 命令执行成功";
 
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
         return "命令执行失败";
     }

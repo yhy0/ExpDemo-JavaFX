@@ -33,7 +33,7 @@ public class S2_005 implements ExploitInterface {
             }
             return flag;
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
         return false;
     }
@@ -46,7 +46,7 @@ public class S2_005 implements ExploitInterface {
             return result;
 
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
         return "fail";
     }
@@ -58,7 +58,7 @@ public class S2_005 implements ExploitInterface {
             return result;
 
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
         return "命令执行失败";
     }

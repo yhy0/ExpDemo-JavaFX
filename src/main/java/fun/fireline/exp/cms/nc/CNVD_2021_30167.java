@@ -36,7 +36,7 @@ public class CNVD_2021_30167 implements ExploitInterface {
             }
             return flag;
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
         return false;
     }

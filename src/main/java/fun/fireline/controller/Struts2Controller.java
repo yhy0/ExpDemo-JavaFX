@@ -387,7 +387,6 @@ public class Struts2Controller extends MainController{
                 String values = Tools.read(Constants.FOFAPATH,"UTF-8", false).toString();
                 values = values.substring(1,values.length()-1);;
 
-                System.out.println(values);
                 String[] EmaliKey = values.split(":");
                 if(EmaliKey.length == 2) {
                     String email = EmaliKey[0];
@@ -424,7 +423,7 @@ public class Struts2Controller extends MainController{
 
         } catch (Exception e) {
             e.printStackTrace();
-            result = e.getStackTrace().toString();
+            result = e.toString();
 
         }
 

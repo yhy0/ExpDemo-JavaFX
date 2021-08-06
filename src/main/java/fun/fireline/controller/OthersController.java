@@ -249,7 +249,7 @@ public class OthersController extends MainController{
                 this.datas.add(new VulInfo(String.valueOf(i), target, isVul));
             }
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
 
         //映射数据进每列
@@ -401,8 +401,8 @@ public class OthersController extends MainController{
 
 
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
-            result = e.getStackTrace().toString();
+            logger.error(e);
+            result = e.toString();
         }
 
         this.fofa_result_info.setText(result);
@@ -467,7 +467,7 @@ public class OthersController extends MainController{
             this.defaultInformation();
             this.basic();
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         }
     }
 

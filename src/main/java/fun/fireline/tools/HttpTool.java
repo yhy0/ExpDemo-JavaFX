@@ -44,8 +44,6 @@ public class HttpTool {
         if(!requestUrl.contains("http")) {
             requestUrl = "http://" + requestUrl;
         }
-        //代理
-        Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
 
         try {
             URL url = new URL(requestUrl);
@@ -55,6 +53,8 @@ public class HttpTool {
                 TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
+                //代理
+                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
 
                 if(proxy != null) {
                     hsc = (HttpsURLConnection)url.openConnection(proxy);
@@ -65,6 +65,9 @@ public class HttpTool {
                 hsc.setHostnameVerifier(allHostsValid);
                 httpUrlConn = hsc;
             } else {
+                //代理
+                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
+
                 if(proxy != null) {
                     hc = (HttpURLConnection)url.openConnection(proxy);
                 } else {
@@ -81,7 +84,6 @@ public class HttpTool {
             httpUrlConn.setReadTimeout(timeOut);
             if (contentType != null && !"".equals(contentType))
                 httpUrlConn.setRequestProperty("Content-Type", contentType);
-
 
             httpUrlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)");
             httpUrlConn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -104,14 +106,14 @@ public class HttpTool {
             String result = readString(inputStream, encoding);
             return result;
         } catch (IOException ie) {
-            logger.error(ie.getStackTrace());
+            logger.error(ie);
             if (hsc != null)
                 return readString(hsc.getErrorStream(), encoding);
             if (hc != null)
                 return readString(hc.getErrorStream(), encoding);
             return "";
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         } finally {
             if (hsc != null)
@@ -212,10 +214,10 @@ public class HttpTool {
             }
             return "";
         } catch (IOException e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         } finally {
             if (br != null)
@@ -250,7 +252,7 @@ public class HttpTool {
             }
 
         } catch (IOException e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
         } finally {
             if (baos != null) {
                 baos.flush();
@@ -362,7 +364,7 @@ public class HttpTool {
             if (hc != null) {
                 hc.disconnect();
             }
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         }
 
@@ -388,7 +390,7 @@ public class HttpTool {
             // 关闭流
             is.close();
         } catch (IOException e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             e.printStackTrace();
         }
         // 对字节数组Base64编码
@@ -462,10 +464,10 @@ public class HttpTool {
                 return hc.getResponseCode();
             return 0;
         } catch (IOException e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         } finally {
             if (br != null)
@@ -582,7 +584,7 @@ public class HttpTool {
                 out.write(buf, 0, size);
             }
         } catch (Exception e) {
-            logger.error(e.getStackTrace());
+            logger.error(e);
             throw e;
         } finally {
             if (bin != null)
