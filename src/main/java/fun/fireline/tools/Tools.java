@@ -8,9 +8,9 @@ package fun.fireline.tools;
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
-import fun.fireline.core.CVE_2021_22986;
+import fun.fireline.exp.others.CVE_2021_22986;
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.exp.apache.struts2.S2_005;
+import fun.fireline.exp.apache.struts2.*;
 import fun.fireline.exp.cms.nc.CNVD_2021_30167;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
@@ -158,16 +158,52 @@ public class Tools {
 
 
     // 根据cve选择对应的漏洞检测
-    public static ExploitInterface getExploit(String select) {
+    public static ExploitInterface getStruts2Exploit(String vulName) {
         ExploitInterface ei = null;
 
-        if (select.contains("CVE-2021-22986")) {
+        if (vulName.contains("S2-005")) {
+            ei = new S2_005();
+        } else if(vulName.contains("S2-009")) {
+            ei = new S2_009();
+        } else if(vulName.contains("S2-016")) {
+            ei = new S2_016();
+        } else if(vulName.contains("S2-019")) {
+            ei = new S2_019();
+        } else if(vulName.contains("S2-032")) {
+            ei = new S2_032();
+        } else if(vulName.contains("S2-045")) {
+            ei = new S2_045();
+        } else if(vulName.contains("S2-046")) {
+            ei = new S2_046();
+        }
+
+        return (ExploitInterface) ei;
+    }
+
+    // 根据选择对应的漏洞检测
+    public static ExploitInterface getExploit(String vulName) {
+        ExploitInterface ei = null;
+        if (vulName.contains("S2-005")) {
+            ei = new S2_005();
+        } else if(vulName.contains("S2-009")) {
+            ei = new S2_009();
+        } else if(vulName.contains("S2-016")) {
+            ei = new S2_016();
+        } else if(vulName.contains("S2-019")) {
+            ei = new S2_019();
+        } else if(vulName.contains("S2-032")) {
+            ei = new S2_032();
+        } else if(vulName.contains("S2-045")) {
+            ei = new S2_045();
+        } else if(vulName.contains("S2-046")) {
+            ei = new S2_046();
+        } else if(vulName.contains("S2-DevMode")) {
+            ei = new S2_DevMode();
+        } else if(vulName.contains("CVE-2021-22986")) {
             // 这里创建你的cve漏洞检测，注意要实现 ExploitInterface 接口
             ei = new CVE_2021_22986();
-        } else if(select.contains("CNVD-2021-30167")){
+        } else if(vulName.contains("CNVD-2021-30167")){
             ei = new CNVD_2021_30167();
-        }else if(select.contains("S2-005")) {
-            ei = new S2_005();
         }
 
         return (ExploitInterface) ei;

@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXTabPane?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="639.0" prefWidth="901.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <JFXButton layoutX="330.0" layoutY="246.0" prefHeight="70.0" prefWidth="200.0" text="Weblogic Page" textFill="#fa9661">
+      <JFXButton layoutX="330.0" layoutY="246.0" prefHeight="70.0" prefWidth="200.0" text="Kingdee Page" textFill="#fa9661">
          <font>
             <Font size="30.0" />
          </font>

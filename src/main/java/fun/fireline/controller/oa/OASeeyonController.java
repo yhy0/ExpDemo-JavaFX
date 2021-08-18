@@ -1,28 +1,28 @@
-package fun.fireline.controller;
+package fun.fireline.controller.oa;
 
+import fun.fireline.controller.OAController;
 import fun.fireline.core.Constants;
 import fun.fireline.core.ExploitInterface;
 import fun.fireline.core.Job;
-import fun.fireline.exp.apache.struts2.*;
 import fun.fireline.tools.Tools;
-
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
-
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+// OA页面相关逻辑
+public class OASeeyonController extends OAController {
 
-/**
- * @author yhy
- * @date 2021/7/3 13:15
- * @github https://github.com/yhy0
- */
-
-// JavaFX图形化界面的控制类
-public class Struts2Controller extends MainController{
     @FXML
     private ChoiceBox<String> choice_cve;
     @FXML
@@ -49,14 +49,7 @@ public class Struts2Controller extends MainController{
     public static String BASICINFO = Constants.SECURITYSTATEMENT +
 
             "支持检测: \r\n" +
-            "\ts2-005: \tXWork ParameterInterceptors 绕过允许远程命令执行   https://cwiki.apache.org/confluence/display/WW/S2-005 \r\n" +
-            "\ts2-009: \tParameterInterceptor 漏洞允许远程命令执行   https://cwiki.apache.org/confluence/display/WW/S2-009 \r\n" +
-            "\ts2-016: \t通过操纵前缀为“action:”/“redirect:”/“redirectAction:”的参数引入的漏洞允许远程命令执行   https://cwiki.apache.org/confluence/display/WW/S2-016 \r\n" +
-            "\ts2-019: \t动态方法执行   https://cwiki.apache.org/confluence/display/WW/S2-019 \r\n" +
-            "\ts2-032: \t启用动态方法调用时，可以通过 method: 前缀执行远程代码执行   https://cwiki.apache.org/confluence/display/WW/S2-032 \r\n" +
-            "\ts2-045: \t基于 Jakarta Multipart 解析器执行文件上传时可能的远程代码执行   https://cwiki.apache.org/confluence/display/WW/S2-045 \r\n" +
-            "\ts2-046: \t基于 Jakarta Multipart 解析器执行文件上传时可能的 RCE（类似于 S2-045）   https://cwiki.apache.org/confluence/display/WW/S2-046 \r\n" +
-            "\ts2-devMode: \t当Struts2开启devMode模式时，将导致严重远程代码执行漏洞 \r\n\r\n\r\n" +
+            "致远OA ，还没写(*^▽^*)\r\n\r\n\r\n" +
 
             Constants.UPDATEINFO;
 
@@ -69,10 +62,7 @@ public class Struts2Controller extends MainController{
             "S2-045",
             "S2-046",
             "S2-DevMode",
-            "all",
     };
-
-
 
     // 界面显示  一些默认的基本信息，漏洞列表、编码选项、线程、shell、页脚
     public void defaultInformation() {

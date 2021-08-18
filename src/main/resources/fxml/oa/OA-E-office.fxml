@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="639.0" prefWidth="901.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
+   <children>
+      <JFXButton layoutX="330.0" layoutY="246.0" prefHeight="70.0" prefWidth="200.0" text="E-office Page" textFill="#fa9661">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </JFXButton>
+   </children>
+</AnchorPane>

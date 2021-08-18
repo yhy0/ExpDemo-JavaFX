@@ -1,4 +1,0 @@
-Manifest-Version: 1.5
-Class-Path: lib/fastjson-1.2.76.jar lib/guava-19.0.jar lib/fontawesomefx-8.9.jar lib/jfoenix-8.0.10.jar
-Main-Class: fun.fireline.Main
-

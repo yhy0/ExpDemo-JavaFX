@@ -7,7 +7,7 @@
     <groupId>fun.fireline</groupId>
     <artifactId>ExpDemo-JavaFX</artifactId>
     <packaging>jar</packaging>
-    <version>1.5</version>
+    <version>1.8</version>
 
     <name>ExpDemo-JavaFX</name>
     <!-- FIXME change it to the project's website -->
@@ -22,44 +22,39 @@
 
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>11.0.2</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.openjfx/javafx-controls &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.openjfx</groupId>-->
+<!--            <artifactId>javafx-controls</artifactId>-->
+<!--            <version>11.0.2</version>-->
+<!--        </dependency>-->
 
-        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-fxml -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>11.0.2</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.openjfx/javafx-fxml &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.openjfx</groupId>-->
+<!--            <artifactId>javafx-fxml</artifactId>-->
+<!--            <version>11.0.2</version>-->
+<!--        </dependency>-->
 
-        <!-- https://mvnrepository.com/artifact/org.kordamp.bootstrapfx/bootstrapfx-core -->
-        <dependency>
-            <groupId>org.kordamp.bootstrapfx</groupId>
-            <artifactId>bootstrapfx-core</artifactId>
-            <version>0.4.0</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.kordamp.bootstrapfx/bootstrapfx-core &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.kordamp.bootstrapfx</groupId>-->
+<!--            <artifactId>bootstrapfx-core</artifactId>-->
+<!--            <version>0.4.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.jfoenix</groupId>
             <artifactId>jfoenix</artifactId>
             <version>8.0.10</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix -->
-        <dependency>
-            <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx</artifactId>
-            <version>8.9</version>
-        </dependency>
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>19.0</version>
-        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.google.guava</groupId>-->
+<!--            <artifactId>guava</artifactId>-->
+<!--            <version>19.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -87,7 +82,7 @@
                     <configuration>
 
                         <!-- 启动类 -->
-                        <mainClass>fun.fireline.Main</mainClass>
+                        <mainClass>fun.fireline.AppStartUp</mainClass>
                         <!-- 运行文件名 -->
                         <appName>${project.build.finalName}</appName>
                         <!-- 菜单-->
@@ -99,11 +94,10 @@
                         <needShortcut>true</needShortcut><!-- 需要生成快捷方式-->
                         <bundleArguments>
                             <installdirChooser>true</installdirChooser><!-- 指示用户是否可以选择应用程序安装目录的标志 -->
-<!--                            <licenseFile>${licenseFilePath}</licenseFile> &lt;!&ndash; 安装时显示的用户协议 &ndash;&gt;-->
+                            <!--   <licenseFile>${licenseFilePath}</licenseFile> &lt;!&ndash; 安装时显示的用户协议 &ndash;&gt;-->
                         </bundleArguments>
                     </configuration>
                 </plugin>
-
 
                 <!-- 打包依赖包到jar中 -->
                 <plugin>
@@ -113,8 +107,8 @@
                     <configuration>
                         <archive>
                             <manifest>
-                                <!-- 启动类 -->
-                                <mainClass>fun.fireline.Main</mainClass>
+
+                                <mainClass>fun.fireline.AppStartUp</mainClass>
                             </manifest>
                         </archive>
                         <!-- get all project dependencies -->
@@ -123,12 +117,11 @@
                         </descriptorRefs>
                         <!-- MainClass in mainfest make a executable jar -->
                         <!-- 运行文件名 -->
-                        <finalName>${project.build.finalName}</finalName>
+                        <finalName>神机</finalName>
                     </configuration>
                     <executions>
                         <execution>
                             <id>make-assembly</id>
-                            <!-- bind to the packaging phase -->
                             <phase>package</phase>
                             <goals>
                                 <goal>single</goal>

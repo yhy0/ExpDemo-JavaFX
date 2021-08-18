@@ -50,7 +50,7 @@ public class HttpTool {
 
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
+                TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
                 //代理
@@ -144,7 +144,7 @@ public class HttpTool {
 
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
+                TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
 
@@ -288,7 +288,7 @@ public class HttpTool {
             Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
+                TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
 
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
@@ -418,7 +418,7 @@ public class HttpTool {
             Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new fun.fireline.tools.MyCERT() };
+                TrustManager[] tm = { new MyCERT() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
 
@@ -598,7 +598,6 @@ public class HttpTool {
         }
         return true;
     }
-
     public static boolean downloadFile(String downURL, String path) throws Exception {
         return downloadFile(downURL, new File(path));
     }

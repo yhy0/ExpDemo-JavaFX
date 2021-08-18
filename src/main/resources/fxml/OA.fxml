@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="647.0" prefWidth="1046.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fun.fireline.controller.OAController">
+
+   <children>
+      <VBox fx:id="selectOAButton" layoutX="1.0" layoutY="1.0" prefHeight="647.0" prefWidth="96.0">
+         <children>
+            <JFXButton id="oa" accessibleText="OA-Seeyon" prefHeight="35.0" prefWidth="115.0" styleClass="menu" text="致远OA" />
+            <JFXButton id="oa" accessibleText="OA-E-office" prefHeight="35.0" prefWidth="115.0" styleClass="menu" text="泛微OA" />
+            <JFXButton id="oa" accessibleText="OA-Kingdee" prefHeight="35.0" prefWidth="115.0" styleClass="menu" text="金蝶OA" />
+            <JFXButton id="oa" accessibleText="OA-Landray" prefHeight="35.0" prefWidth="115.0" styleClass="menu" text="蓝凌OA" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+
+      <Separator layoutX="99.0" layoutY="1.0" orientation="VERTICAL" prefHeight="647.0" prefWidth="0.0" />
+      <AnchorPane fx:id="OA_content" layoutX="104.0" layoutY="1.0" minHeight="0.0" minWidth="0.0" prefHeight="647.0" prefWidth="911.0" />
+   </children>
+</AnchorPane>
