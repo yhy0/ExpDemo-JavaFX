@@ -13,6 +13,11 @@
 https://user-images.githubusercontent.com/31311038/129846212-c0a50a7d-0890-4fdf-909e-000981246e3b.mp4
 
 
+<video controls="controls" loop="loop" autoplay="autoplay"> 
+    <source src="images/神机.mp4" type="video/mp4">
+</video>
+
+
 ## 0x03 编写属于你的图像化漏洞利用工具
 
 #### 3.1 项目结构
