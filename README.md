@@ -121,6 +121,8 @@ EXP具体编写请参考 `fun/fireline/exp` 下的各种漏洞实现
 
 具体请看[更新记录.md](更新记录.md)
 
+[ExpDemo-JavaFX工具新增漏洞编写教程](https://mp.weixin.qq.com/s/j5BHSbNZ76XbSZp6hFj9fw)
+
 #### 3.4 部署，发布
 
 当一切编写完成，bug修复完毕，在项目根目录下执行 **mvn package assembly:single** 即可生成 **jar** 文件。
