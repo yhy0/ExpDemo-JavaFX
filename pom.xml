@@ -22,26 +22,13 @@
 
     <dependencies>
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.openjfx/javafx-controls &ndash;&gt;-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp &ndash;&gt;-->
 <!--        <dependency>-->
-<!--            <groupId>org.openjfx</groupId>-->
-<!--            <artifactId>javafx-controls</artifactId>-->
-<!--            <version>11.0.2</version>-->
+<!--            <groupId>com.squareup.okhttp3</groupId>-->
+<!--            <artifactId>okhttp</artifactId>-->
+<!--            <version>4.9.1</version>-->
 <!--        </dependency>-->
 
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.openjfx/javafx-fxml &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.openjfx</groupId>-->
-<!--            <artifactId>javafx-fxml</artifactId>-->
-<!--            <version>11.0.2</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.kordamp.bootstrapfx/bootstrapfx-core &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.kordamp.bootstrapfx</groupId>-->
-<!--            <artifactId>bootstrapfx-core</artifactId>-->
-<!--            <version>0.4.0</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>com.jfoenix</groupId>
@@ -49,17 +36,11 @@
             <version>8.0.10</version>
         </dependency>
 
-
-<!--        <dependency>-->
-<!--            <groupId>com.google.guava</groupId>-->
-<!--            <artifactId>guava</artifactId>-->
-<!--            <version>19.0</version>-->
-<!--        </dependency>-->
-
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.76</version>
+            <version>1.2.78</version>
         </dependency>
 
         <!-- log4j support -->

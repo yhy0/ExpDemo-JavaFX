@@ -6,6 +6,8 @@
 
 使用本项目，你不需要懂太多Java语言，只需要了解基本的语法，参考自带的EXP例子，即可快速开发一款**属于你自己**的漏洞利用工具，建立自己的漏洞利用库。
 
+[ExpDemo-JavaFX工具新增漏洞编写教程](https://mp.weixin.qq.com/s/j5BHSbNZ76XbSZp6hFj9fw)
+
 ## 0x02 Demo
 
 经过多次改版，这是最终(?)的效果。详细见[更新记录.md](更新记录.md)
@@ -140,3 +142,7 @@ EXP具体编写请参考 `fun/fireline/exp` 下的各种漏洞实现
 除非您已充分阅读、完全理解并接受本协议所有条款，否则，请您不要安装并使用本工具。
 
 您的使用行为或者您以其他任何明示或者默示方式表示接受本协议的，即视为您已阅读并同意本协议的约束。
+
+## 开心指数
+
+[![Stargazers over time](https://starchart.cc/yhy0/ExpDemo-JavaFX.svg)](https://starchart.cc/yhy0/ExpDemo-JavaFX)

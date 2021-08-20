@@ -12,6 +12,7 @@ import fun.fireline.exp.others.CVE_2021_22986;
 import fun.fireline.core.ExploitInterface;
 import fun.fireline.exp.apache.struts2.*;
 import fun.fireline.exp.cms.nc.CNVD_2021_30167;
+import fun.fireline.exp.php.thinkphp.ThinkPHP2x;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.stage.Window;
@@ -157,29 +158,6 @@ public class Tools {
     }
 
 
-    // 根据cve选择对应的漏洞检测
-    public static ExploitInterface getStruts2Exploit(String vulName) {
-        ExploitInterface ei = null;
-
-        if (vulName.contains("S2-005")) {
-            ei = new S2_005();
-        } else if(vulName.contains("S2-009")) {
-            ei = new S2_009();
-        } else if(vulName.contains("S2-016")) {
-            ei = new S2_016();
-        } else if(vulName.contains("S2-019")) {
-            ei = new S2_019();
-        } else if(vulName.contains("S2-032")) {
-            ei = new S2_032();
-        } else if(vulName.contains("S2-045")) {
-            ei = new S2_045();
-        } else if(vulName.contains("S2-046")) {
-            ei = new S2_046();
-        }
-
-        return (ExploitInterface) ei;
-    }
-
     // 根据选择对应的漏洞检测
     public static ExploitInterface getExploit(String vulName) {
         ExploitInterface ei = null;
@@ -204,6 +182,8 @@ public class Tools {
             ei = new CVE_2021_22986();
         } else if(vulName.contains("CNVD-2021-30167")){
             ei = new CNVD_2021_30167();
+        } else if(vulName.contains("ThinkPHP 2.x")){
+            ei = new ThinkPHP2x();
         }
 
         return (ExploitInterface) ei;

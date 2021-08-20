@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="647.0" prefWidth="1046.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fun.fireline.controller.ShiroController">
+
+   <children>
+      <ChoiceBox fx:id="choice_cve" layoutX="128.0" layoutY="4.0" prefHeight="27.0" prefWidth="200.0" />
+      <TextField fx:id="url" layoutX="438.0" layoutY="5.0" prefHeight="29.0" prefWidth="432.0" promptText="http://127.0.0.1">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </TextField>
+
+
+      <Text layoutX="39.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="选择漏洞">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <Text layoutX="377.0" layoutY="24.0" strokeType="OUTSIDE" strokeWidth="0.0" text="地址">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Text>
+      <JFXButton layoutX="892.0" layoutY="1.0" onAction="#check" prefHeight="29.0" prefWidth="85.0" text="验证">
+         <font>
+            <Font size="15.0" />
+         </font></JFXButton>
+
+
+      <JFXTabPane layoutY="35.0" prefHeight="612.0" prefWidth="1048.0">
+         <tabs>
+            <Tab text="基本信息">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="644.0" prefWidth="901.0">
+                     <children>
+                        <TextArea fx:id="basic_info" layoutX="-1.0" layoutY="-2.0" prefHeight="583.0" prefWidth="1048.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="-2.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font></TextArea>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="命令执行">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="cmd" layoutX="133.0" layoutY="5.0" prefHeight="27.0" prefWidth="498.0" promptText="whoami">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextField>
+                        <ChoiceBox fx:id="encoding" layoutX="692.0" layoutY="4.0" prefHeight="21.0" prefWidth="107.0" />
+                        <TextArea fx:id="cmd_info" layoutY="40.0" prefHeight="539.0" prefWidth="1048.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
+                        <Text layoutX="50.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="命令">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Text>
+                        <JFXButton fx:id="execute" layoutX="861.0" layoutY="4.0" onAction="#get_execute_cmd" prefHeight="21.0" prefWidth="66.0" text="执行" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="文件上传">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextArea fx:id="upload_info" layoutY="38.0" prefHeight="384.0" prefWidth="1048.0" AnchorPane.bottomAnchor="158.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="38.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
+                        <TextField fx:id="upload_path" layoutX="154.0" layoutY="5.0" prefHeight="29.0" prefWidth="474.0" promptText="test.jsp">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextField>
+                        <Text layoutX="58.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="文件名">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Text>
+                        <ChoiceBox fx:id="platform" layoutX="711.0" layoutY="4.0" prefHeight="27.0" prefWidth="85.0" />
+                        <TextArea fx:id="upload_msg" layoutY="423.0" prefHeight="160.0" prefWidth="1048.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font></TextArea>
+                        <JFXButton fx:id="upload" layoutX="849.0" layoutY="1.0" onAction="#get_shell_file" prefHeight="35.0" prefWidth="100.0" text="上传文件" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </JFXTabPane>
+
+   </children>
+</AnchorPane>

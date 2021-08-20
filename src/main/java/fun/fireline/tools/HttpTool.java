@@ -28,13 +28,13 @@ public class HttpTool {
     private static final Logger logger = Logger.getLogger(MainController.class);
 
     private static int Timeout = 10000;
-
     private static String DefalutEncoding = "UTF-8";
 
-    public static String httpRequest(String requestUrl, int timeOut, String requestMethod, String contentType, String postString, String encoding) throws Exception {
+    public static int status;
+    public static Map<String,List<String>> responseHeaders;
 
-        if ("".equals(encoding) || encoding == null)
-            encoding = DefalutEncoding;
+
+    public static String httpRequest(String requestUrl, int timeOut, String requestMethod, String contentType, String postString, String encoding) throws Exception {
         URLConnection httpUrlConn = null;
         HttpsURLConnection hsc = null;
         HttpURLConnection hc = null;
@@ -47,7 +47,6 @@ public class HttpTool {
 
         try {
             URL url = new URL(requestUrl);
-
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
                 TrustManager[] tm = { new MyCERT() };
@@ -76,7 +75,6 @@ public class HttpTool {
                 hc.setRequestMethod(requestMethod);
                 //禁止302 跳转
                 hc.setInstanceFollowRedirects(false);
-                System.out.println(hc.getRequestProperties());
                 httpUrlConn = hc;
             }
 
@@ -87,7 +85,6 @@ public class HttpTool {
 
             httpUrlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)");
             httpUrlConn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-            httpUrlConn.setRequestProperty("Accept-Encoding", "gzip, deflate");
             httpUrlConn.setRequestProperty("Accept-Language","zh-CN,zh;q=0.9");
             httpUrlConn.setRequestProperty("Connection","close");
 
@@ -98,12 +95,20 @@ public class HttpTool {
 
             if (null != postString && !"".equals(postString)) {
                 OutputStream outputStream = httpUrlConn.getOutputStream();
-                outputStream.write(postString.getBytes(encoding));
+                if(encoding.equals("")) {
+                    outputStream.write(postString.getBytes());
+                } else {
+                    outputStream.write(postString.getBytes(encoding));
+                }
                 outputStream.flush();
                 outputStream.close();
             }
+
             inputStream = httpUrlConn.getInputStream();
+
             String result = readString(inputStream, encoding);
+            status = hc.getResponseCode();
+            responseHeaders = hc.getHeaderFields();
             return result;
         } catch (IOException ie) {
             logger.error(ie);
@@ -233,6 +238,85 @@ public class HttpTool {
         }
     }
 
+    public static HttpURLConnection getHttpURLConnection(String requestUrl) throws Exception {
+        URLConnection httpUrlConn = null;
+        HttpsURLConnection hsc = null;
+        HttpURLConnection hc = null;
+        InputStream inputStream = null;
+
+        // url中没有协议，默认走http协议
+        if(!requestUrl.contains("http")) {
+            requestUrl = "http://" + requestUrl;
+        }
+
+        try {
+            URL url = new URL(requestUrl);
+
+            if (requestUrl.startsWith("https")) {
+                SSLContext sslContext = SSLContext.getInstance("SSL");
+                TrustManager[] tm = { new MyCERT() };
+                sslContext.init(null, tm, new SecureRandom());
+                SSLSocketFactory ssf = sslContext.getSocketFactory();
+                //代理
+                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
+
+                if(proxy != null) {
+                    hsc = (HttpsURLConnection)url.openConnection(proxy);
+                } else {
+                    hsc = (HttpsURLConnection)url.openConnection();
+                }
+                hsc.setSSLSocketFactory(ssf);
+                hsc.setHostnameVerifier(allHostsValid);
+                httpUrlConn = hsc;
+            } else {
+                //代理
+                Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
+
+                if(proxy != null) {
+                    hc = (HttpURLConnection)url.openConnection(proxy);
+                } else {
+                    hc = (HttpURLConnection)url.openConnection();
+                }
+                hc.setRequestMethod("GET");
+                //禁止302 跳转
+                hc.setInstanceFollowRedirects(false);
+                httpUrlConn = hc;
+            }
+
+            httpUrlConn.setConnectTimeout(Timeout);
+            httpUrlConn.setReadTimeout(Timeout);
+
+            httpUrlConn.setRequestProperty("Content-Type", "text/html");
+
+            httpUrlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)");
+            httpUrlConn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            httpUrlConn.setRequestProperty("Accept-Language","zh-CN,zh;q=0.9");
+            httpUrlConn.setRequestProperty("Connection","close");
+
+            httpUrlConn.setDoOutput(true);
+            httpUrlConn.setDoInput(true);
+
+            httpUrlConn.connect();
+
+            return hc;
+        } catch (IOException ie) {
+            logger.error(ie);
+            if (hsc != null)
+                return hc;
+            if (hc != null)
+                return hc;
+            return null;
+        } catch (Exception e) {
+            logger.error(e);
+            throw e;
+        } finally {
+            if (hsc != null)
+                hsc.disconnect();
+            if (hc != null)
+                hc.disconnect();
+        }
+    }
+
     public static HostnameVerifier allHostsValid = new HostnameVerifier() {
         public boolean verify(String hostname, SSLSession session) {
             return true;
@@ -262,6 +346,10 @@ public class HttpTool {
                 bis.close();
             if (inputStream != null)
                 inputStream.close();
+
+            if (encoding.equals("")) {
+                return baos.toString();
+            }
             return baos.toString(encoding);
         }
 
@@ -487,6 +575,10 @@ public class HttpTool {
         return httpRequest(requestUrl, Timeout, method, contentType, postString, encoding);
     }
 
+    public static String httpReuest(String requestUrl, String method, HashMap<String, String> headers, String contentType, String postString, String encoding) throws Exception {
+        return httpRequestAddHeader(requestUrl, Timeout, method, contentType, postString, encoding, headers);
+    }
+
     public static String postHttpReuest(String requestUrl, int timeOut, String contentType, String postString, String encoding) throws Exception {
         return httpRequest(requestUrl, timeOut, "POST", contentType, postString, encoding);
     }
@@ -509,6 +601,10 @@ public class HttpTool {
 
     public static String getHttpReuest(String requestUrl, String contentType, String encoding) throws Exception {
         return httpRequest(requestUrl, Timeout, "GET", contentType, "", encoding);
+    }
+
+    public static String getHttpReuest(String requestUrl, String encoding) throws Exception {
+        return httpRequest(requestUrl, Timeout, "GET", "text/html", "", encoding);
     }
 
     public static String postHttpReuestByXML(String requestUrl, int timeOut, String postString, String encoding) throws Exception {

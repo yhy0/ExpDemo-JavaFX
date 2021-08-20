@@ -40,6 +40,7 @@
                <children>
                   <VBox fx:id="selectButton" layoutX="-2.0" prefHeight="512.0" prefWidth="127.0" HBox.hgrow="ALWAYS">
                      <children>
+                        <JFXButton accessibleText="Shiro" prefHeight="43.0" prefWidth="127.0" styleClass="menu" text="Shiro" />
                         <JFXButton accessibleText="Struts2" prefHeight="43.0" prefWidth="127.0" styleClass="menu" text="Struts2" />
                         <JFXButton accessibleText="Weblogic" prefHeight="43.0" prefWidth="127.0" styleClass="menu" text="Weblogic" />
                         <JFXButton accessibleText="ThinkPHP" prefHeight="43.0" prefWidth="127.0" styleClass="menu" text="ThinkPHP" />
