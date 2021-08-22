@@ -10,7 +10,7 @@ public class Constants {
 
     public static String NAME = "神机";
 
-    public static String VERSION = "v1.8 ";
+    public static String VERSION = "v1.9 ";
 
     public static String AUTHOR = "yhy";
 
@@ -19,10 +19,16 @@ public class Constants {
             "\t\t\t\t\t\t\t\t用户滥用造成的一切后果与作者无关\r\n\t\t\t" +
             "\t\t\t\t\t\t\t\t使用者请务必遵守当地法律\r\n\t\t\t" +
             "\t\t\t\t\t\t\t\t本程序不得用于商业用途，仅限学习交流\r\n\t\t\t" +
-            "\t\t\t\t\t\t----------------------------------------------------------------\r\n\r\n";
+            "\t\t\t\t\t\t----------------------------------------------------------------\r\n\r\n" +
+            "\t\t\t\t\t\t\t\t\t\t目前所有的payload均取自网上，我只是个搬运工，感谢各位师傅\r\n\t\t\t\r\n\r\n";
 
     public static String UPDATEINFO =
             "Bug反馈:  https://github.com/yhy0/ExpDemo-JavaFX\r\n\r\n" +
+            "V1.9\r\n" +
+            "\thttp请求改用蓝鲸师傅封装好的，将蓝鲸师傅的thinkphp漏洞利用全部复制过来\r\n" +
+            "\t将shack2师傅的Java反序列化漏洞利用工具V1.7中的Weblogic漏洞利用全部复制过来\r\n" +
+            "\t感谢蓝鲸师傅, 原项目 https://github.com/bewhale/thinkphp_gui_tools\r\n" +
+            "\t感谢shack2师傅，原项目  https://github.com/shack2/javaserializetools\r\n" +
             "V1.8\r\n" +
             "\t去除fofa搜索、去除批量检查\r\n" +
             "\t添加Struts2漏洞利用\r\n" +

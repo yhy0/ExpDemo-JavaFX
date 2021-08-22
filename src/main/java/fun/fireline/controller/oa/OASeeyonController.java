@@ -4,6 +4,7 @@ import fun.fireline.controller.OAController;
 import fun.fireline.core.Constants;
 import fun.fireline.core.ExploitInterface;
 import fun.fireline.core.Job;
+import fun.fireline.core.VulCheckTask;
 import fun.fireline.tools.Tools;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -53,21 +54,14 @@ public class OASeeyonController extends OAController {
 
             Constants.UPDATEINFO;
 
-    public static String[] STRUTS2 = {
-            "S2-005",
-            "S2-009",
-            "S2-016",
-            "S2-019",
-            "S2-032",
-            "S2-045",
-            "S2-046",
-            "S2-DevMode",
+    public static String[] OASeeyon = {
+            "all",
     };
 
     // 界面显示  一些默认的基本信息，漏洞列表、编码选项、线程、shell、页脚
     public void defaultInformation() {
-        this.choice_cve.setValue(STRUTS2[0]);
-        for (String cve : STRUTS2) {
+        this.choice_cve.setValue(OASeeyon[0]);
+        for (String cve : OASeeyon) {
             this.choice_cve.getItems().add(cve);
         }
         this.encoding.setValue(Constants.ENCODING[0]);
@@ -97,99 +91,86 @@ public class OASeeyonController extends OAController {
     public void basic() {
         // 切换界面保留原来的记录
         // 基本信息的历史记录
-        if(history.containsKey("Struts2_url")) {
-            this.url.setText((String) history.get("Struts2_url"));
+        if(history.containsKey("OASeeyon_url")) {
+            this.url.setText((String) history.get("OASeeyon_url"));
         }
-        if(history.containsKey("Struts2_vulName")) {
-            this.choice_cve.setValue((String) history.get("Struts2_vulName"));
+        if(history.containsKey("OASeeyon_vulName")) {
+            this.choice_cve.setValue((String) history.get("OASeeyon_vulName"));
         }
-        if(history.containsKey("Struts2_ei")) {
-            this.ei = (ExploitInterface) history.get("Struts2_ei");
+        if(history.containsKey("OASeeyon_ei")) {
+            this.ei = (ExploitInterface) history.get("OASeeyon_ei");
         }
-        if(history.containsKey("Struts2_basic_info")) {
-            this.basic_info.setText((String) history.get("Struts2_basic_info"));
+        if(history.containsKey("OASeeyon_basic_info")) {
+            this.basic_info.setText((String) history.get("OASeeyon_basic_info"));
         } else {
             this.basic_info.setText(BASICINFO);
         }
         this.basic_info.setWrapText(true);
 
         // 命令执行的历史记录
-        if(history.containsKey("Struts2_cmd")) {
-            this.cmd.setText((String) history.get("Struts2_cmd"));
+        if(history.containsKey("OASeeyon_cmd")) {
+            this.cmd.setText((String) history.get("OASeeyon_cmd"));
         }
-        if(history.containsKey("Struts2_encoding")) {
-            this.encoding.setValue((String) history.get("Struts2_encoding"));
+        if(history.containsKey("OASeeyon_encoding")) {
+            this.encoding.setValue((String) history.get("OASeeyon_encoding"));
         }
-        if(history.containsKey("Struts2_cmd_info")) {
-            this.cmd_info.setText((String) history.get("Struts2_cmd_info"));
+        if(history.containsKey("OASeeyon_cmd_info")) {
+            this.cmd_info.setText((String) history.get("OASeeyon_cmd_info"));
         }
 
         // 文件上传的历史记录
-        if(history.containsKey("Struts2_upload_info")) {
-            this.upload_info.setText((String) history.get("Struts2_upload_info"));
+        if(history.containsKey("OASeeyon_upload_info")) {
+            this.upload_info.setText((String) history.get("OASeeyon_upload_info"));
         }
-        if(history.containsKey("Struts2_upload_path")) {
-            this.upload_path.setText((String) history.get("Struts2_upload_path"));
+        if(history.containsKey("OASeeyon_upload_path")) {
+            this.upload_path.setText((String) history.get("OASeeyon_upload_path"));
         }
-        if(history.containsKey("Struts2_platform")) {
-            this.platform.setValue((String) history.get("Struts2_platform"));
+        if(history.containsKey("OASeeyon_platform")) {
+            this.platform.setValue((String) history.get("OASeeyon_platform"));
         }
-        if(history.containsKey("Struts2_upload_msg")) {
-            this.upload_msg.setText((String) history.get("Struts2_upload_msg"));
+        if(history.containsKey("OASeeyon_upload_msg")) {
+            this.upload_msg.setText((String) history.get("OASeeyon_upload_msg"));
         }
     }
 
     // 点击检测，获取url 和 要检测的漏洞
     @FXML
     public void check() {
-        String url = this.url.getText().trim();
-        history.put("Struts2_url", this.url.getText());
+        String url = Tools.urlParse(this.url.getText().trim());
+        history.put("OASeeyon_url", this.url.getText());
         String vulName = this.choice_cve.getValue().toString().trim();
 
-        history.put("Struts2_vulName", this.choice_cve.getValue());
+        history.put("OASeeyon_vulName", this.choice_cve.getValue());
 
-        if(Tools.checkTheURL(url)) {
-            try {
-                if (vulName.equals("all")) {
-                    this.basic_info.setText("");
-                    ExecutorService pool = Executors.newFixedThreadPool(3);
-                    for (String vul : this.choice_cve.getItems()) {
-                        if (!vul.equals("all")) {
-                            Job t = new Job(url, vul);
-                            // 线程池
-                            Future f = pool.submit(t);
-                            try {
-                                if ((Boolean) f.get()) {
-                                    this.basic_info.setText(this.basic_info.getText() + "\r\n\t[ + ] " + url + " 存在 " + vul + " 漏洞  O(∩_∩)O~" + "\r\n");
-                                } else {
-                                    this.basic_info.setText(this.basic_info.getText() + "\r\n\t[ - ] " + url + " 不存在 " + vul + " 漏洞 \r\n");
-                                }
-                            } catch (Exception e1) {
-                                logger.error(e1.toString());
+        try {
+            if (vulName.equals("all")) {
+                this.basic_info.setText("");
+                for (String vul : this.choice_cve.getItems()) {
+                    if (!vul.equals("all")) {
+                        VulCheckTask vulCheckTask = new VulCheckTask(this.url.getText(), vul);
+                        vulCheckTask.messageProperty().addListener((observable, oldValue, newValue) -> {
+                            this.basic_info.appendText("\t" + newValue + "\r\n\r\n");
+                            if(newValue.contains("目标存在")) {
+                                this.choice_cve.setValue(vul);
+                                this.ei = Tools.getExploit(vul);
+                                this.ei.checkVul(url);
                             }
-                        }
+                        });
+                        (new Thread(vulCheckTask)).start();
                     }
-                } else {
-                    this.ei = Tools.getExploit(vulName);
-
-                    if(this.ei.checkVul(url)) {
-                        this.basic_info.setText("\r\n\t[ + ] " + url + " 存在 " + vulName + " 漏洞" + "\r\n\r\n\twebPath:\r\n\t\t" + this.ei.getWebPath());
-                    } else {
-                        this.basic_info.setText("\r\n\t[ - ] " + url + " 不存在 " + vulName + " 漏洞 \r\n");
-                    }
-                    history.put("Struts2_ei", this.ei);
                 }
-
-            } catch (Exception e) {
-                this.basic_info.setText("\r\n\t检测异常 \r\n\t\t\t" + e.toString());
+            } else {
+                this.ei = Tools.getExploit(vulName);
+                String result = this.ei.checkVul(url);
+                this.basic_info.setText("\r\n\t" + result + "\r\n\r\n\twebPath:\r\n\t\t" + this.ei.getWebPath());
             }
 
-
-        } else {
-            Tools.alert("URL检查", "URL格式不符合要求，示例：http://127.0.0.1:7001/");
+        } catch (Exception e) {
+            this.basic_info.setText("\r\n\t检测异常 \r\n\t\t\t" + e.toString());
         }
 
-        history.put("Struts2_basic_info", this.basic_info.getText());
+        history.put("OASeeyon_ei", this.ei);
+        history.put("OASeeyon_basic_info", this.basic_info.getText());
 
     }
 
@@ -199,30 +180,27 @@ public class OASeeyonController extends OAController {
         String cmd = this.cmd.getText();
         String encoding = this.encoding.getValue().toString().trim();
 
-        history.put("Struts2_cmd", this.cmd.getText());
-        history.put("Struts2_encoding", this.encoding.getValue());
+        history.put("OASeeyon_cmd", this.cmd.getText());
+        history.put("OASeeyon_encoding", this.encoding.getValue());
 
         if(cmd.length() == 0) {
             cmd = "whoami";
         }
 
-        if(this.ei.isVul()) {
-            try {
+        try {
+            if(this.ei.isVul()) {
                 String result = this.ei.exeCmd(cmd, encoding);
-                if(result.contains("fail")) {
-                    this.cmd_info.setText("命令执行失败");
-                } else {
-                    this.cmd_info.setText(result);
-                }
+                this.cmd_info.setText(result);
 
-            } catch (Exception var4) {
-                this.cmd_info.setText("error: " + var4.toString());
+            } else {
+                this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
             }
 
-        } else {
-            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
+        } catch (Exception var4) {
+            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在\r\n");
+            this.cmd_info.appendText("error: " + var4.toString());
         }
-        history.put("Struts2_cmd_info", this.cmd_info.getText());
+        history.put("OASeeyon_cmd_info", this.cmd_info.getText());
     }
 
 
@@ -233,9 +211,9 @@ public class OASeeyonController extends OAController {
         String upload_path = this.upload_path.getText();
         String platform = this.platform.getValue().toString().trim();
 
-        history.put("Struts2_upload_info", this.upload_info.getText());
-        history.put("Struts2_upload_path", this.upload_path.getText());
-        history.put("Struts2_platform", this.platform.getValue());
+        history.put("OASeeyon_upload_info", this.upload_info.getText());
+        history.put("OASeeyon_upload_path", this.upload_path.getText());
+        history.put("OASeeyon_platform", this.platform.getValue());
 
         if(upload_path.length() == 0) {
             upload_path = "test.jsp";
@@ -253,9 +231,8 @@ public class OASeeyonController extends OAController {
 
             } else {
                 this.upload_msg.setText("文件上传失败！");
-                System.out.println( this.ei.isVul());
             }
-            history.put("Struts2_upload_msg", this.upload_msg.getText());
+            history.put("OASeeyon_upload_msg", this.upload_msg.getText());
         } else {
             Tools.alert("文件上传", "上传的文件不能为空");
         }

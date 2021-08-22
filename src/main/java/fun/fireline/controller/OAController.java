@@ -49,7 +49,6 @@ public class OAController{
         for (Node node: selectOAButton.getChildren()){
             if (node.getAccessibleText() != null){
                 node.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-                    System.out.println(node.getAccessibleText());
                     refreshPage(node.getAccessibleText());
                 });
             }
@@ -64,7 +63,7 @@ public class OAController{
 
             this.OA_content.getChildren().add(contentPage);
         } catch (IOException e) {
-            System.out.println(e);
+            logger.debug(e);
         }
     }
 

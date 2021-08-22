@@ -1,7 +1,8 @@
 package fun.fireline.exp.apache.shiro;
 
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
 
 import java.util.HashMap;
 
@@ -15,17 +16,23 @@ public class Shiro implements ExploitInterface {
     private String target = null;
 
     private boolean isVul = false;
+
+    private  HashMap<String, String> headers = new HashMap();
     
     @Override
-    public boolean checkVul(String url) {
+    public String checkVul(String url) {
         this.target = url;
 
         HashMap<String, String> map = new HashMap();       //请求headers
         // 设置 header ，检测是否为 shiro
-        map.put("Cookie", "rememberMe=1111");
+        this.headers.put("Cookie", "rememberMe=1111");
+
+
+        Response response = HttpTools.get(this.target, this.headers, "UTF-8");
 
         try {
-            String result = HttpTool.httpReuest(this.target, "GET", map, "", "", "UTF-8");
+
+
 
 
 
@@ -38,9 +45,9 @@ public class Shiro implements ExploitInterface {
 //            }
 //            return flag;
         } catch (Exception e) {
-            logger.error(e);
+            logger.debug(e);
         }
-        return false;
+        return "";
     }
 
     @Override

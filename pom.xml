@@ -7,7 +7,7 @@
     <groupId>fun.fireline</groupId>
     <artifactId>ExpDemo-JavaFX</artifactId>
     <packaging>jar</packaging>
-    <version>1.8</version>
+    <version>1.9</version>
 
     <name>ExpDemo-JavaFX</name>
     <!-- FIXME change it to the project's website -->
@@ -21,14 +21,6 @@
     </properties>
 
     <dependencies>
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.squareup.okhttp3</groupId>-->
-<!--            <artifactId>okhttp</artifactId>-->
-<!--            <version>4.9.1</version>-->
-<!--        </dependency>-->
-
 
         <dependency>
             <groupId>com.jfoenix</groupId>

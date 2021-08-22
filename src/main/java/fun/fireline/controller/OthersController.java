@@ -3,6 +3,7 @@ package fun.fireline.controller;
 import fun.fireline.core.Constants;
 import fun.fireline.core.ExploitInterface;
 import fun.fireline.core.Job;
+import fun.fireline.core.VulCheckTask;
 import fun.fireline.tools.Tools;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -46,7 +47,6 @@ public class OthersController extends MainController{
     private ExploitInterface ei;
 
     public static String BASICINFO = Constants.SECURITYSTATEMENT +
-
             "支持检测: \r\n" +
             "\tF5-CVE-2021-22986: \tF5 BIG-IP/BIG-IQ iControl REST 未授权远程代码执行漏洞 https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-22986 \r\n" +
             "\t用友NC-CNVD-2021-30167: \t \r\n" +
@@ -54,9 +54,9 @@ public class OthersController extends MainController{
             "\r\n" + Constants.UPDATEINFO;
 
     public static String[] OTHERS = {
+            "all",
             "F5-CVE-2021-22986",
             "用友NC-CNVD-2021-30167",
-            "all",
     };
 
 
@@ -139,53 +139,42 @@ public class OthersController extends MainController{
     // 点击检测，获取url 和 要检测的漏洞
     @FXML
     public void check() {
-        String url = this.url.getText().trim();
+        String url = Tools.urlParse(this.url.getText().trim());
         history.put("Others_url", this.url.getText());
         String vulName = this.choice_cve.getValue().toString().trim();
 
         history.put("Others_vulName", this.choice_cve.getValue());
 
-        if(Tools.checkTheURL(url)) {
-            try {
-                if (vulName.equals("all")) {
-                    this.basic_info.setText("");
-                    ExecutorService pool = Executors.newFixedThreadPool(3);
-                    for (String vul : this.choice_cve.getItems()) {
-                        if (!vul.equals("all")) {
-                            Job t = new Job(url, vul);
-                            // 线程池
-                            Future f = pool.submit(t);
-                            try {
-                                if ((Boolean) f.get()) {
-                                    this.basic_info.setText(this.basic_info.getText() + "\r\n\t[ + ] " + url + " 存在 " + vul + " 漏洞  O(∩_∩)O~" + "\r\n");
-                                } else {
-                                    this.basic_info.setText(this.basic_info.getText() + "\r\n\t[ - ] " + url + " 不存在 " + vul + " 漏洞 \r\n");
-                                }
-                            } catch (Exception e1) {
-                                logger.error(e1.toString());
+        try {
+            if (vulName.equals("all")) {
+                this.basic_info.setText("");
+                for (String vul : this.choice_cve.getItems()) {
+                    if (!vul.equals("all")) {
+
+                        VulCheckTask vulCheckTask = new VulCheckTask(this.url.getText(), vul);
+                        vulCheckTask.messageProperty().addListener((observable, oldValue, newValue) -> {
+                            this.basic_info.appendText("\t" + newValue + "\r\n\r\n");
+                            if(newValue.contains("目标存在")) {
+                                this.choice_cve.setValue(vul);
+                                this.ei = Tools.getExploit(vul);
+                                this.ei.checkVul(url);
                             }
-                        }
+                        });
+                        (new Thread(vulCheckTask)).start();
                     }
-                } else {
-                    this.ei = Tools.getExploit(vulName);
-
-                    if(this.ei.checkVul(url)) {
-                        this.basic_info.setText("\r\n\t[ + ] " + url + " 存在 " + vulName + " 漏洞" + "\r\n\r\n\twebPath:\r\n\t\t" + this.ei.getWebPath());
-                    } else {
-                        this.basic_info.setText("\r\n\t[ - ] " + url + " 不存在 " + vulName + " 漏洞 \r\n");
-                    }
-                    history.put("Others_ei", this.ei);
                 }
+            } else {
 
-            } catch (Exception e) {
-                this.basic_info.setText("\r\n\t检测异常 \r\n\t\t\t" + e.toString());
+                this.ei = Tools.getExploit(vulName);
+                String result = this.ei.checkVul(url);
+                this.basic_info.setText("\r\n\t" + result + "\r\n\r\n\twebPath:\r\n\t\t" + this.ei.getWebPath());
             }
 
-
-        } else {
-            Tools.alert("URL检查", "URL格式不符合要求，示例：http://127.0.0.1:7001/");
+        } catch (Exception e) {
+            this.basic_info.setText("\r\n\t检测异常 \r\n\t\t\t" + e.toString());
         }
 
+        history.put("Others_ei", this.ei);
         history.put("Others_basic_info", this.basic_info.getText());
 
     }
@@ -203,21 +192,18 @@ public class OthersController extends MainController{
             cmd = "whoami";
         }
 
-        if(this.ei.isVul()) {
-            try {
+        try {
+            if(this.ei.isVul()) {
                 String result = this.ei.exeCmd(cmd, encoding);
-                if(result.contains("fail")) {
-                    this.cmd_info.setText("命令执行失败");
-                } else {
-                    this.cmd_info.setText(result);
-                }
+                this.cmd_info.setText(result);
 
-            } catch (Exception var4) {
-                this.cmd_info.setText("error: " + var4.toString());
+            } else {
+                this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
             }
 
-        } else {
-            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在");
+        } catch (Exception var4) {
+            this.cmd_info.setText("请先进行漏洞检测，确认漏洞存在\r\n");
+            this.cmd_info.appendText("error: " + var4.toString());
         }
         history.put("Others_cmd_info", this.cmd_info.getText());
     }
@@ -250,7 +236,6 @@ public class OthersController extends MainController{
 
             } else {
                 this.upload_msg.setText("文件上传失败！");
-                System.out.println( this.ei.isVul());
             }
             history.put("Others_upload_msg", this.upload_msg.getText());
         } else {

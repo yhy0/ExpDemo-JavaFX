@@ -7,6 +7,7 @@ package fun.fireline.tools;
  */
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
+// 已弃用， 后续都是用 HttpTools
 
 import fun.fireline.controller.MainController;
 import org.apache.log4j.Logger;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class HttpTool {
+public class HttpToolOld {
     private static final Logger logger = Logger.getLogger(MainController.class);
 
     private static int Timeout = 10000;
@@ -49,7 +50,7 @@ public class HttpTool {
             URL url = new URL(requestUrl);
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new MyCERT() };
+                TrustManager[] tm = { new Cert() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
                 //代理
@@ -111,14 +112,14 @@ public class HttpTool {
             responseHeaders = hc.getHeaderFields();
             return result;
         } catch (IOException ie) {
-            logger.error(ie);
+            logger.debug(ie);
             if (hsc != null)
                 return readString(hsc.getErrorStream(), encoding);
             if (hc != null)
                 return readString(hc.getErrorStream(), encoding);
             return "";
         } catch (Exception e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } finally {
             if (hsc != null)
@@ -149,7 +150,7 @@ public class HttpTool {
 
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new MyCERT() };
+                TrustManager[] tm = { new Cert() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
 
@@ -212,17 +213,16 @@ public class HttpTool {
                 Set<String> keys = responseheaders.keySet();
                 for (String key : keys) {
                     List<String> val = responseheaders.get(key);
-                    System.out.println(key + ": " + val.toString());
                     responseHeaderString = responseHeaderString + key + ": " + val.toString();
                 }
                 return responseHeaderString;
             }
             return "";
         } catch (IOException e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } catch (Exception e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } finally {
             if (br != null)
@@ -238,7 +238,7 @@ public class HttpTool {
         }
     }
 
-    public static HttpURLConnection getHttpURLConnection(String requestUrl) throws Exception {
+    public static HttpURLConnection getHttpURLConnection(String requestUrl, String requestMethod, String contentType, String postString, String encoding, HashMap<String, String> headers) throws Exception {
         URLConnection httpUrlConn = null;
         HttpsURLConnection hsc = null;
         HttpURLConnection hc = null;
@@ -254,7 +254,7 @@ public class HttpTool {
 
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new MyCERT() };
+                TrustManager[] tm = { new Cert() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
                 //代理
@@ -277,7 +277,7 @@ public class HttpTool {
                 } else {
                     hc = (HttpURLConnection)url.openConnection();
                 }
-                hc.setRequestMethod("GET");
+                hc.setRequestMethod(requestMethod);
                 //禁止302 跳转
                 hc.setInstanceFollowRedirects(false);
                 httpUrlConn = hc;
@@ -285,8 +285,12 @@ public class HttpTool {
 
             httpUrlConn.setConnectTimeout(Timeout);
             httpUrlConn.setReadTimeout(Timeout);
+            if(contentType.equals("")) {
+                httpUrlConn.setRequestProperty("Content-Type", "text/html");
+            } else {
+                httpUrlConn.setRequestProperty("Content-Type", contentType);
+            }
 
-            httpUrlConn.setRequestProperty("Content-Type", "text/html");
 
             httpUrlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)");
             httpUrlConn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -300,14 +304,14 @@ public class HttpTool {
 
             return hc;
         } catch (IOException ie) {
-            logger.error(ie);
+            logger.debug(ie);
             if (hsc != null)
                 return hc;
             if (hc != null)
                 return hc;
             return null;
         } catch (Exception e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } finally {
             if (hsc != null)
@@ -336,7 +340,7 @@ public class HttpTool {
             }
 
         } catch (IOException e) {
-            logger.error(e);
+            logger.debug(e);
         } finally {
             if (baos != null) {
                 baos.flush();
@@ -376,7 +380,7 @@ public class HttpTool {
             Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new MyCERT() };
+                TrustManager[] tm = { new Cert() };
                 sslContext.init(null, tm, new SecureRandom());
 
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
@@ -452,7 +456,7 @@ public class HttpTool {
             if (hc != null) {
                 hc.disconnect();
             }
-            logger.error(e);
+            logger.debug(e);
             throw e;
         }
 
@@ -478,7 +482,7 @@ public class HttpTool {
             // 关闭流
             is.close();
         } catch (IOException e) {
-            logger.error(e);
+            logger.debug(e);
             e.printStackTrace();
         }
         // 对字节数组Base64编码
@@ -506,7 +510,7 @@ public class HttpTool {
             Proxy proxy = (Proxy) MainController.settingInfo.get("proxy");
             if (requestUrl.startsWith("https")) {
                 SSLContext sslContext = SSLContext.getInstance("SSL");
-                TrustManager[] tm = { new MyCERT() };
+                TrustManager[] tm = { new Cert() };
                 sslContext.init(null, tm, new SecureRandom());
                 SSLSocketFactory ssf = sslContext.getSocketFactory();
 
@@ -552,10 +556,10 @@ public class HttpTool {
                 return hc.getResponseCode();
             return 0;
         } catch (IOException e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } catch (Exception e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } finally {
             if (br != null)
@@ -680,7 +684,7 @@ public class HttpTool {
                 out.write(buf, 0, size);
             }
         } catch (Exception e) {
-            logger.error(e);
+            logger.debug(e);
             throw e;
         } finally {
             if (bin != null)

@@ -2,18 +2,16 @@ package fun.fireline.tools;
 
 /**
  * @author yhy
- * @date 2021/3/25 21:00
+ * @date 2021/8/20 23:25
  * @github https://github.com/yhy0
  */
 
-// 取自 shack2 的Java反序列化漏洞利用工具V1.7
-
-import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import javax.net.ssl.X509TrustManager;
 
-public class MyCERT implements X509TrustManager {
-    public MyCERT() {
+public class Cert implements X509TrustManager {
+    public Cert() {
     }
 
     public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {

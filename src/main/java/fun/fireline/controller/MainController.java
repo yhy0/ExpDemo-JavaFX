@@ -48,6 +48,7 @@ public class MainController  {
     private JFXButton yhy;
 
 
+
     public static Map<String, Object> history = new HashMap<String, Object>();
 
     // 设置相关信息保存
@@ -157,7 +158,7 @@ public class MainController  {
 
             } catch (Exception var) {
                 proxyStatusLabel.setText("代理服务器配置加载失败。");
-                logger.error(var);
+                logger.debug(var);
             }
 
 
@@ -199,7 +200,6 @@ public class MainController  {
                     }
 
                     proxyStatusLabel.setText("代理生效中");
-                    System.out.println(proxyStatusLabel.getText());
                     inputDialog.getDialogPane().getScene().getWindow().hide();
                 }
             });
@@ -243,7 +243,7 @@ public class MainController  {
             try {
                 Desktop.getDesktop().browse(new URL("https://github.com/yhy0").toURI());
             } catch (Exception e1) {
-                System.out.println(e1);
+                logger.debug(e1);
             }
         });
 
@@ -265,7 +265,7 @@ public class MainController  {
 
             this.content.getChildren().add(contentPage);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.debug(e);
         }
     }
 

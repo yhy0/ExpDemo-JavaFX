@@ -8,27 +8,27 @@ package fun.fireline.tools;
 
 // http 请求对象，取自 shack2 的Java反序列化漏洞利用工具V1.7
 
-import fun.fireline.exp.others.CVE_2021_22986;
+import fun.fireline.controller.MainController;
 import fun.fireline.core.ExploitInterface;
+
 import fun.fireline.exp.apache.struts2.*;
+import fun.fireline.exp.oracle.weblogic.*;
+import fun.fireline.exp.php.thinkphp.*;
 import fun.fireline.exp.cms.nc.CNVD_2021_30167;
-import fun.fireline.exp.php.thinkphp.ThinkPHP2x;
+import fun.fireline.others.CVE_2021_22986;
+
 import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
 import javafx.stage.Window;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tools {
+    public static Logger logger = Logger.getLogger(MainController.class);
     public Tools() {
     }
 
@@ -88,6 +88,19 @@ public class Tools {
             return weburl;
         }
     }
+
+    public static String urlParse(String url) {
+        if (!url.contains("http")) {
+            url = "http://" + url;
+        }
+
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        return url;
+    }
+
 
     public static boolean checkTheURL(String weburl) {
         if ("".equals(weburl.trim())) {
@@ -177,13 +190,72 @@ public class Tools {
             ei = new S2_046();
         } else if(vulName.contains("S2-DevMode")) {
             ei = new S2_DevMode();
+
+
+        } else if(vulName.contains("ThinkPHP 2.x")){
+            ei = new ThinkPHP2x();
+        } else if(vulName.contains("TP5_construct_code_exec_1")) {
+            // 这里创建你的cve漏洞检测，注意要实现 ExploitInterface 接口
+            ei = new TP5_construct_code_exec_1();
+        } else if(vulName.contains("TP5_construct_code_exec_2")){
+            ei = new TP5_construct_code_exec_2();
+        } else if(vulName.contains("TP5_construct_code_exec_3")){
+            ei = new TP5_construct_code_exec_3();
+        } else if(vulName.contains("TP5_construct_code_exec_4")){
+            ei = new TP5_construct_code_exec_4();
+        } else if(vulName.contains("TP5_construct_debug_rce")){
+            ei = new TP5_construct_debug_rce();
+        } else if(vulName.contains("TP5_driver_display_rce")){
+            ei = new TP5_driver_display_rce();
+        } else if(vulName.contains("TP5_index_construct_rce")){
+            ei = new TP5_index_construct_rce();
+        } else if(vulName.contains("TP5_invoke_func_code_exec_1")){
+            ei = new TP5_invoke_func_code_exec_1();
+        } else if(vulName.contains("TP5_invoke_func_code_exec_2")){
+            ei = new TP5_invoke_func_code_exec_2();
+        } else if(vulName.contains("TP5_method_filter_code_exec")){
+            ei = new TP5_method_filter_code_exec();
+        } else if(vulName.contains("TP5_request_input_rce")){
+            ei = new TP5_request_input_rce();
+        } else if(vulName.contains("TP5_templalte_driver_rce")){
+            ei = new TP5_templalte_driver_rce();
+        } else if(vulName.contains("TP6_session_file_write")){
+            ei = new TP6_session_file_write();
+        } else if(vulName.contains("TP_cache")){
+            ei = new TP_cache();
+        } else if(vulName.contains("TP5_index_showid_rce")){
+            ei = new TP5_index_showid_rce();
+        } else if(vulName.contains("TP5_debug_index_ids_sqli")){
+            ei = new TP5_debug_index_ids_sqli();
+        } else if(vulName.contains("TP_checkcode_time_sqli")){
+            ei = new TP_checkcode_time_sqli();
+        } else if(vulName.contains("TP_multi_sql_leak")){
+            ei = new TP_multi_sql_leak();
+        } else if(vulName.contains("TP_pay_orderid_sqli")){
+            ei = new TP_pay_orderid_sqli();
+        } else if(vulName.contains("TP_update_sql")){
+            ei = new TP_update_sql();
+        } else if(vulName.contains("TP_view_recent_xff_sqli")) {
+            ei = new TP_view_recent_xff_sqli();
+
+
+        } else if (vulName.contains("CVE-2017-10271 Weblogic10")) {
+            ei = new CVE_2017_10271_10();
+        } else if (vulName.contains("CVE-2017-10271 Weblogic12")) {
+            ei = new CVE_2017_10271_12();
+        } else if (vulName.contains("CVE-2019-2725 Weblogic10")) {
+            ei = new CVE_2019_2725_10();
+        } else if (vulName.contains("CVE-2019-2725 Weblogic12")) {
+            ei = new CVE_2019_2725_12();
+        } else if (vulName.contains("CVE-2019-2725-Bypass Weblogic10")) {
+            ei = new CVE_2019_2725_10_bypass();
+ 
+
         } else if(vulName.contains("CVE-2021-22986")) {
             // 这里创建你的cve漏洞检测，注意要实现 ExploitInterface 接口
             ei = new CVE_2021_22986();
         } else if(vulName.contains("CNVD-2021-30167")){
             ei = new CNVD_2021_30167();
-        } else if(vulName.contains("ThinkPHP 2.x")){
-            ei = new ThinkPHP2x();
         }
 
         return (ExploitInterface) ei;
@@ -227,23 +299,55 @@ public class Tools {
             String exp = (String) pro.get("exp");
             return exp;
         } catch (IOException var4) {
-            Logger.getLogger(Tools.class.getName()).log(Level.SEVERE, (String) null, var4);
+            logger.debug(var4);
             return "";
         }
     }
 
-
-    public static String fofaHTTP(String emali, String key, String value, int size, TextArea fofa_result_info) throws Exception {
-
-        String qbase64 = Base64.getEncoder().encodeToString(value.getBytes());
-
-        String url = "https://fofa.so/api/v1/search/all?email=" + emali + "&key=" + key + "&qbase64=" + qbase64 + "&full=true&fields=host,title&size=" + size;
-        System.out.println(url);
-        String result = "";
-
-        result = HttpTool.getHttpReuest(url, "text/xml", "UTF-8");
-
+    // 去除html
+    public static String regReplace(String content) {
+        String pattern = "<.*html.*>[\\s\\S]*</html>";
+        String newString = "";
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(content);
+        String result = m.replaceAll(newString);
         return result;
+    }
+
+    // 随机字符
+    public static String getRandomString(int length) {
+        String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < length; ++i) {
+            int number = random.nextInt(62);
+            sb.append(str.charAt(number));
+        }
+
+        return sb.toString();
+    }
+
+
+
+    // base64编码
+    public static String Base64Encode(String txt) {
+        try {
+            return Base64.getEncoder().encodeToString(txt.getBytes("UTF-8"));
+        } catch (Exception var2) {
+            logger.debug(var2);
+            return "";
+        }
+    }
+
+    // 获取weblogic 的exp文本
+    public static String getExp(String path) {
+        InputStream in = Tools.class.getClassLoader().getResourceAsStream(path);
+
+        Scanner s = (new Scanner(in)).useDelimiter("\\A");
+        String str = s.hasNext() ? s.next() : "";
+
+        return str;
     }
 
 }

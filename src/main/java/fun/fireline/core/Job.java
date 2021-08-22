@@ -27,14 +27,16 @@ public class Job implements Callable<Boolean> {
     // 根据cve选择对应的漏洞检测
     public boolean checkAllExp() {
         ExploitInterface ei = Tools.getExploit(vulName);
+
         try {
-            if(ei.checkVul(this.target)) {
+            ei.checkVul(this.target);
+            if(ei.isVul()) {
                 return true;
             } else {
                 return false;
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            logger.debug(e.toString());
         }
         return false;
     }

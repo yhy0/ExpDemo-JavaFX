@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -86,7 +88,7 @@
                            <font>
                               <Font size="15.0" />
                            </font></TextField>
-                        <Text layoutX="58.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="文件名">
+                        <Text layoutX="33.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="路径">
                            <font>
                               <Font size="15.0" />
                            </font>
@@ -97,6 +99,29 @@
                               <Font size="15.0" />
                            </font></TextArea>
                         <JFXButton fx:id="upload" layoutX="849.0" layoutY="1.0" onAction="#get_shell_file" prefHeight="35.0" prefWidth="100.0" text="上传文件" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="日志遍历">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Text layoutX="28.0" layoutY="25.0" strokeType="OUTSIDE" strokeWidth="0.0" text="路径">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Text>
+                        <JFXComboBox fx:id="logPath" layoutX="89.0" layoutY="5.0" prefHeight="27.0" prefWidth="241.0" />
+                        <Text layoutX="356.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="开始时间"/>
+                        <DatePicker fx:id="start_time" layoutX="440.0" layoutY="4.0" prefHeight="27.0" prefWidth="151.0" />
+
+                        <Text layoutX="612.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="结束时间"/>
+                        <DatePicker fx:id="stop_time" layoutX="689.0" layoutY="3.0" prefHeight="27.0" prefWidth="151.0" />
+                        <JFXButton layoutX="873.0" layoutY="1.0" onAction="#log_traversal_start" prefHeight="35.0" prefWidth="60.0" text="开始" />
+                        <JFXButton fx:id="log_clear" layoutX="954.0" layoutY="1.0" prefHeight="35.0" prefWidth="60.0" text="清空" />
+
+                        <TextArea fx:id="loginfo" layoutY="40.0" prefHeight="538.0" prefWidth="1048.0" />
                      </children>
                   </AnchorPane>
                </content>
