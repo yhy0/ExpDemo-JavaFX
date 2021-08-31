@@ -12,7 +12,11 @@
 
 经过多次改版，这是最终(?)的效果。详细见[更新记录.md](更新记录.md)
 
-https://user-images.githubusercontent.com/31311038/129846212-c0a50a7d-0890-4fdf-909e-000981246e3b.mp4
+
+
+https://user-images.githubusercontent.com/31311038/131443436-cbc91857-d19e-4721-b82c-eb160c2d8440.mp4
+
+
 
 
 <video controls="controls" loop="loop" autoplay="autoplay"> 
